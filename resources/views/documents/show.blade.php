@@ -1,0 +1,285 @@
+{{-- resources/views/documents/show.blade.php --}}
+@extends('layouts.app')
+
+@section('content')
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Documento Principal -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-brown text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">{{ $document->title }}</h4>
+                        <div class="d-flex gap-2">
+                            @if (!$document->is_free && !$isPurchased && auth()->check())
+                                <form action="{{ route('documents.purchase', $document->id) }}" method="POST"
+                                    class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-cart-plus"></i> Comprar - ${{ number_format($document->price, 2) }}
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if ($canViewFull)
+                                <a href="{{ route('documents.download', $document->id) }}" class="btn btn-success btn-sm">
+                                    <i class="bi bi-download"></i> Descargar
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Vista previa del documento -->
+                        @if (Str::endsWith($document->file_path, '.pdf'))
+                            @if ($canViewFull)
+                                {{-- PDF COMPLETO --}}
+                                <iframe src="{{ asset('storage/' . $document->file_path) }}#toolbar=1&navpanes=0"
+                                    class="w-100" style="height: 600px; border: 1px solid #ddd;">
+                                </iframe>
+                            @else
+                                {{-- SOLO PRIMERA PÁGINA --}}
+                                <div class="position-relative">
+                                    <iframe
+                                        src="{{ asset('storage/' . $document->file_path) }}#page=1&zoom=100&toolbar=0&navpanes=0&scrollbar=0"
+                                        class="w-100" style="height: 600px; border: 1px solid #ddd;">
+                                    </iframe>
+
+                                    {{-- Overlay --}}
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex 
+                    justify-content-center align-items-center bg-dark bg-opacity-75 text-white"
+                                        style="font-size: 1.2rem;">
+                                        Vista previa — Compra el documento para ver completo
+                                    </div>
+                                </div>
+                            @endif
+                        @else
+                            <div class="text-center py-5 bg-light rounded">
+                                <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+                                <p class="mt-3 text-muted">Vista previa no disponible para este tipo de archivo</p>
+                            </div>
+                        @endif
+
+                        <!-- Información del documento -->
+                        <div class="mt-4">
+                            <h5>Descripción</h5>
+                            <p class="text-muted">{{ $document->description ?? 'Sin descripción' }}</p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <strong>Categoría:</strong> {{ $document->category->name ?? 'Sin categoría' }}
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <strong>Subido por:</strong> {{ $document->user->name }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Estadísticas -->
+                            <div class="d-flex gap-4 mt-3 pt-3 border-top">
+                                <div class="text-center">
+                                    <span class="fw-bold text-brown">{{ $document->views_count }}</span>
+                                    <div class="small text-muted">Vistas</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="fw-bold text-brown">{{ $document->likes_count }}</span>
+                                    <div class="small text-muted">Likes</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="fw-bold text-brown">{{ $document->comments->count() }}</span>
+                                    <div class="small text-muted">Comentarios</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones de interacción -->
+                    <div class="card-footer bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2">
+                                <!-- Botón Like -->
+                                <form action="{{ route('documents.like', $document->id) }}" method="POST"
+                                    class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i
+                                            class="bi bi-heart{{ $document->isLikedBy(auth()->user()) ? '-fill' : '' }}"></i>
+                                        Like
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="text-muted small">
+                                <i class="bi bi-eye"></i> {{ $document->views_count }} vistas
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Comentarios -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-chat-left-text"></i> Comentarios
+                            <span class="badge bg-brown ms-2">{{ $document->comments->count() }}</span>
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Formulario para nuevo comentario -->
+                        @auth
+                            <form action="{{ route('documents.comment', $document->id) }}" method="POST" class="mb-4">
+                                @csrf
+                                <div class="mb-3">
+                                    <textarea name="comment" class="form-control" rows="3" placeholder="Escribe tu comentario..." required></textarea>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-brown btn-sm">
+                                        <i class="bi bi-send"></i> Publicar Comentario
+                                    </button>
+                                </div>
+                            </form>
+                        @else
+                            <div class="alert alert-info">
+                                <a href="{{ route('login') }}" class="alert-link">Inicia sesión</a> para comentar.
+                            </div>
+                        @endauth
+
+                        <!-- Lista de comentarios -->
+                        <div class="comments-section">
+                            @forelse($document->comments as $comment)
+                                <div class="comment-item border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <strong class="me-2">{{ $comment->user->name }}</strong>
+                                                <small
+                                                    class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <p class="mb-0 text-dark">{{ $comment->comment }}</p>
+                                        </div>
+
+                                        @if ($comment->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
+                                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
+                                                class="ms-2">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('¿Eliminar este comentario?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center text-muted py-4">
+                                    <i class="bi bi-chat-left display-6 d-block mb-2"></i>
+                                    <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar con información adicional -->
+            <div class="col-lg-4">
+                <!-- Información de compra -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="bi bi-info-circle"></i> Información</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>Tipo:</strong>
+                            @if ($document->is_free)
+                                <span class="badge bg-success">Gratis</span>
+                            @else
+                                <span class="badge bg-warning text-dark">De pago</span>
+                            @endif
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Precio:</strong>
+                            @if ($document->is_free)
+                                <span class="text-success fw-bold">Gratuito</span>
+                            @else
+                                <span class="text-brown fw-bold">${{ number_format($document->price, 2) }}</span>
+                            @endif
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Estado:</strong>
+                            @if ($document->is_free || $isPurchased)
+                                <span class="badge bg-success">Disponible</span>
+                            @else
+                                <span class="badge bg-secondary">No adquirido</span>
+                            @endif
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Subido:</strong>
+                            <div class="text-muted">{{ $document->created_at->format('d/m/Y') }}</div>
+                        </div>
+
+                        @if ($document->tags && count($document->tags) > 0)
+                            <div class="mb-3">
+                                <strong>Etiquetas:</strong>
+                                <div class="mt-1">
+                                    @foreach ($document->tags as $tag)
+                                        <span class="badge bg-light text-dark border me-1">{{ $tag }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Documentos relacionados -->
+                @if ($relatedDocuments->count() > 0)
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="bi bi-collection"></i> Documentos Relacionados</h6>
+                        </div>
+                        <div class="card-body">
+                            @foreach ($relatedDocuments as $relatedDoc)
+                                <div class="mb-2 pb-2 border-bottom">
+                                    <a href="{{ route('documents.show', $relatedDoc->id) }}"
+                                        class="text-decoration-none text-dark">
+                                        <small class="fw-semibold">{{ Str::limit($relatedDoc->title, 40) }}</small>
+                                    </a>
+                                    <div class="d-flex justify-content-between mt-1">
+                                        <small class="text-muted">
+                                            @if ($relatedDoc->is_free)
+                                                <span class="badge bg-success btn-sm">Gratis</span>
+                                            @else
+                                                <span
+                                                    class="badge bg-warning btn-sm">${{ number_format($relatedDoc->price, 2) }}</span>
+                                            @endif
+                                        </small>
+                                        <small class="text-muted">{{ $relatedDoc->views_count }} vistas</small>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Incrementar contador de vistas cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch(`/documents/{{ $document->id }}/view`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            });
+        });
+    </script>
+@endsection
