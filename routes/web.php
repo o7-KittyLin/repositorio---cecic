@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\RepositoryController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentInteractionController;
@@ -18,7 +19,7 @@ Route::get('/repository/gallery', [RepositoryController::class, 'gallery'])->nam
 // Descargar documento (solo si gratis o comprado)
     Route::get('documents/download/{document}', [DocumentController::class, 'download'])
         ->name('documents.download');
-        
+
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -26,15 +27,17 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
     Route::resource('documents', DocumentController::class);
 
-    
+
 
     Route::get('/repository', [RepositoryController::class, 'index'])->name('repository.index');
     Route::post('/repository', [RepositoryController::class, 'store'])->name('repository.store');
     Route::get('/repository/{document}/edit', [RepositoryController::class, 'edit'])->name('repository.edit');
     Route::put('/repository/{document}', [RepositoryController::class, 'update'])->name('repository.update');
-    Route::delete('/repository/{document}', [RepositoryController::class, 'destroy'])->name('repository.destroy');
+    //Route::delete('/repository/{document}', [RepositoryController::class, 'destroy'])->name('repository.destroy');
+    Route::patch('/repository/{document}/toggle', [RepositoryController::class, 'toggleActive'])
+        ->name('repository.toggle');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-    Route::get('/repository/download/{document}', 
+    Route::get('/repository/download/{document}',
     [RepositoryController::class, 'download'])
     ->name('repository.download')
     ->middleware('auth'); // obliga a iniciar sesión
@@ -46,10 +49,16 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // Interacciones con documentos
     Route::post('documents/{document}/like', [DocumentInteractionController::class, 'like'])
         ->name('documents.like');
+
     Route::post('documents/{document}/comment', [DocumentInteractionController::class, 'comment'])
         ->name('documents.comment');
+
+    Route::post('/documents/{document}/favorite', [DocumentInteractionController::class, 'toggleFavorite'])
+        ->name('documents.favorite');
+
     Route::delete('comments/{comment}', [DocumentInteractionController::class, 'deleteComment'])
         ->name('comments.destroy');
+
 
     // Compras
     Route::post('documents/{document}/purchase', [PurchaseController::class, 'purchase'])
@@ -57,9 +66,13 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('my-purchases', [PurchaseController::class, 'myPurchases'])
         ->name('purchases.my');
 
+    Route::get('my-favorites', [FavoriteController::class, 'myFavorites'])
+        ->name('favorites.my');
+
+
     // Vista de documento individual
-    Route::get('documents/{document}/show', [DocumentController::class, 'show'])
-        ->name('documents.show');
+//    Route::get('documents/{document}/show', [DocumentController::class, 'show'])
+//        ->name('documents.show');
 
     Route::get('my-purchases', [PurchaseController::class, 'myPurchases'])
         ->name('purchases.my');

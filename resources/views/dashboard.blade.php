@@ -6,7 +6,7 @@
     <!-- Título principal -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-brown mb-0">
-            <i class="bi bi-speedometer2 me-2"></i> 
+            <i class="bi bi-speedometer2 me-2"></i>
             @hasrole('Administrador')
                 Panel de Administración
             @else
@@ -104,30 +104,30 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-md-3 col-6">
+                        <div class="col-md-4 col-6">
                             <a href="{{ route('repository.gallery') }}" class="btn btn-outline-brown w-100 h-100 py-3">
                                 <i class="bi bi-archive display-6 d-block mb-2"></i>
                                 <span>Explorar Documentos</span>
                             </a>
                         </div>
-                        <div class="col-md-3 col-6">
+                        <div class="col-md-4 col-6">
                             <a href="{{ route('purchases.my') }}" class="btn btn-outline-success w-100 h-100 py-3">
                                 <i class="bi bi-bag-check display-6 d-block mb-2"></i>
                                 <span>Mis Compras</span>
                             </a>
                         </div>
-                        <div class="col-md-3 col-6">
-                            <a href="#" class="btn btn-outline-primary w-100 h-100 py-3">
+                        <div class="col-md-4 col-6">
+                            <a href="{{route('favorites.my')}}" class="btn btn-outline-primary w-100 h-100 py-3">
                                 <i class="bi bi-heart display-6 d-block mb-2"></i>
                                 <span>Favoritos</span>
                             </a>
                         </div>
-                        <div class="col-md-3 col-6">
-                            <a href="#" class="btn btn-outline-info w-100 h-100 py-3">
-                                <i class="bi bi-clock-history display-6 d-block mb-2"></i>
-                                <span>Recientes</span>
-                            </a>
-                        </div>
+{{--                        <div class="col-md-3 col-6">--}}
+{{--                            <a href="#" class="btn btn-outline-info w-100 h-100 py-3">--}}
+{{--                                <i class="bi bi-clock-history display-6 d-block mb-2"></i>--}}
+{{--                                <span>Recientes</span>--}}
+{{--                            </a>--}}
+{{--                        </div>--}}
                     </div>
                 </div>
             </div>
@@ -160,7 +160,7 @@
                                 ->limit(4)
                                 ->get();
                         @endphp
-                        
+
                         @forelse($recentDocuments as $document)
                             <div class="col-lg-3 col-md-6">
                                 <div class="card h-100 border">
@@ -176,7 +176,7 @@
                                             @else
                                                 <span class="badge bg-warning text-dark">${{ number_format($document->price, 2) }}</span>
                                             @endif
-                                            <a href="{{ route('documents.show', $document->id) }}" 
+                                            <a href="{{ route('documents.show', $document->id) }}"
                                                class="btn btn-sm btn-outline-brown">Ver</a>
                                         </div>
                                     </div>
@@ -189,7 +189,7 @@
                             </div>
                         @endforelse
                     </div>
-                    
+
                     @if($recentDocuments->count() > 0)
                         <div class="text-center mt-4">
                             <a href="{{ route('repository.gallery') }}" class="btn btn-brown">
@@ -210,16 +210,16 @@
 <style>
     .text-brown { color: #4e342e !important; }
     .bg-brown { background-color: #4e342e !important; }
-    .btn-brown { 
-        background-color: #4e342e !important; 
+    .btn-brown {
+        background-color: #4e342e !important;
         border-color: #4e342e !important;
         color: white !important;
     }
-    .btn-outline-brown { 
+    .btn-outline-brown {
         border-color: #4e342e !important;
         color: #4e342e !important;
     }
-    .btn-outline-brown:hover { 
+    .btn-outline-brown:hover {
         background-color: #4e342e !important;
         color: white !important;
     }

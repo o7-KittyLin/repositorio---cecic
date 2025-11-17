@@ -58,9 +58,20 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
+
 
     <!-- Tabla de documentos -->
     <table class="table table-hover bg-white shadow-sm align-middle">
@@ -99,8 +110,8 @@
                     <a href="{{ route('repository.edit', $doc->id) }}" class="btn btn-sm btn-warning">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <form method="POST" action="{{ route('repository.destroy', $doc->id) }}" class="d-inline">
-                        @csrf @method('DELETE')
+                    <form method="POST" action="{{ route('repository.toggle', $doc->id) }}" class="d-inline">
+                        @csrf @method('PATCH')
                         <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar documento?')">
                             <i class="bi bi-trash"></i>
                         </button>
@@ -174,7 +185,7 @@
                 <div class="col-12">
                     <label class="form-label fw-semibold">Archivo</label>
                     <input type="file" name="file" class="form-control" required>
-                    <div class="form-text">Formatos: PDF, Word o PowerPoint (máx. 10MB)</div>
+                    <div class="form-text">Formatos: PDF (máx. 10MB)</div> <!-- , Word o PowerPoint  -->
                 </div>
             </div>
             <div class="text-end mt-3">

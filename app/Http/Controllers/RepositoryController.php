@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\Category;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use PDF;
 
 class RepositoryController extends Controller
 {
@@ -15,9 +16,8 @@ class RepositoryController extends Controller
     {
         $categories = Category::all();
 
-        $query = Document::with('category');
+        $query = Document::with('category')->where('is_active', true);
 
-        // Filtrar por categoría
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
@@ -28,47 +28,63 @@ class RepositoryController extends Controller
     }
 
 
+
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'file'        => 'required|file|mimes:pdf,doc,docx,ppt,pptx|max:10240',
             'category_id' => 'nullable|exists:categories,id',
             'price'       => 'nullable|numeric|min:0',
+        ],[
+            'file.max' => 'El archivo es muy pesado. Máximo 10MB.',
         ]);
 
-        $file = $request->file('file');
-
-        $fileName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))
-                       . '.' . $file->getClientOriginalExtension();
-
-        // Guardar el archivo
-        $file->move(storage_path('app/public/documents'), $fileName);
-        $path = 'documents/' . $fileName;
-
-        // Generar preview PDF si no es PDF
-        $previewPath = null;
-
-        if ($file->getClientOriginalExtension() !== 'pdf') {
-            $previewPath = 'documents/' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.pdf';
-
-            Storage::disk('public')->put($previewPath, PDF::loadView('repository.preview')
-                ->output());
+        if ($validator->fails()) {
+            return redirect()->route('repository.index')
+                ->withErrors($validator)
+                ->withInput();
         }
 
-        Document::create([
-            'user_id'     => auth()->id(),
-            'category_id' => $request->category_id,
-            'title'       => $request->title,
-            'description' => $request->description,
-            'file_path'   => $path,
-            'preview_path'=> $previewPath,
-            'price'       => $request->price,
-            'is_free'     => $request->price ? false : true,
-        ]);
+        $validated = $validator->validated();
 
-        return back()->with('success', 'Documento subido correctamente.');
+        try {
+            $file = $request->file('file');
+
+            $fileName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))
+                . '-' . time()
+                . '.' . $file->getClientOriginalExtension();
+
+            $path = $file->storeAs('documents', $fileName, 'public');
+
+            $previewPath = null;
+            if ($file->getClientOriginalExtension() !== 'pdf') {
+                $previewFileName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '-' . time() . '.pdf';
+                $previewPath = 'documents/' . $previewFileName;
+
+                Storage::disk('public')->put($previewPath, Pdf::loadView('repository.preview')->output());
+            }
+
+            Document::create([
+                'user_id'      => auth()->id(),
+                'category_id'  => $validated['category_id'] ?? null,
+                'title'        => $validated['title'],
+                'description'  => $validated['description'] ?? null,
+                'file_path'    => $path,
+                'preview_path' => $previewPath,
+                'price'        => $validated['price'] ?? null,
+                'is_free'      => empty($validated['price']),
+            ]);
+
+            return redirect()->route('repository.index')
+                ->with('success', 'Documento subido correctamente.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('repository.index')
+                ->with('error', $e->getMessage())
+                ->withInput();
+        }
     }
 
 
@@ -162,4 +178,24 @@ class RepositoryController extends Controller
 
         return response()->download($path, basename($path));
     }
+
+    public function toggleActive(Document $document)
+    {
+        if ($document->is_active) {
+            $document->is_active = false;
+            $document->save();
+            $document->delete();
+        } else {
+            $document->restore();
+            $document->is_active = true;
+            $document->save();
+        }
+
+        return back()->with('success', $document->is_active
+            ? 'Documento activado.'
+            : 'Documento eliminado.');
+    }
+
+
+
 }

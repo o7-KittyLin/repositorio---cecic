@@ -12,7 +12,7 @@ class DocumentInteractionController extends Controller
     public function like(Document $document)
     {
         $user = auth()->user();
-        
+
         $existingLike = Like::where('user_id', $user->id)
             ->where('document_id', $document->id)
             ->first();
@@ -67,4 +67,23 @@ class DocumentInteractionController extends Controller
 
         return back()->with('success', 'Comentario eliminado.');
     }
+
+    public function toggleFavorite(Document $document): \Illuminate\Http\RedirectResponse
+    {
+        $user = auth()->user();
+
+        $favorite = $document->favorites()->where('user_id', $user->id)->first();
+
+        if ($favorite) {
+            $favorite->delete();
+        } else {
+            $document->favorites()->create([
+                'user_id' => $user->id,
+            ]);
+        }
+
+        return back();
+    }
+
+
 }
