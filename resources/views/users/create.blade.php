@@ -13,28 +13,40 @@
             <div class="row g-3">
 
                 <div class="col-md-6">
-                    <label class="form-label">Nombre</label>
-                    <input name="name" class="form-control" required>
+                    <label class="form-label">Nombre*</label>
+                    <input name="name" class="form-control">
+                    @error('name')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <input name="email" type="email" class="form-control" required>
+                    <label class="form-label">Email*</label>
+                    <input name="email" type="email" class="form-control">
+                    @error('email')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Contraseña</label>
-                    <input name="password" type="password" class="form-control" required>
+                    <label class="form-label">Contraseña*</label>
+                    <input name="password" type="password" class="form-control" >
+                    @error('password')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Rol</label>
-                    <select name="role" class="form-select" required>
+                    <label class="form-label">Rol*</label>
+                    <select name="role" class="form-select" >
                         <option value="">Seleccione...</option>
                         @foreach ($roles as $r)
                         <option value="{{ $r->name }}">{{ $r->name }}</option>
                         @endforeach
                     </select>
+                    @error('role')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
 
             </div>

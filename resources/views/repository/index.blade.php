@@ -159,8 +159,12 @@
             @csrf
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Título</label>
-                    <input type="text" name="title" class="form-control" required>
+                    <label class="form-label fw-semibold">Título*</label>
+                    <input type="text" name="title" class="form-control">
+                    @error('title')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Categoría</label>
@@ -174,6 +178,9 @@
                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">
                             <i class="bi bi-plus-lg"></i>
                         </button>
+                        @error('category_id')
+                        <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
@@ -183,21 +190,31 @@
                         <option value="1">Gratis</option>
                         <option value="0">De pago</option>
                     </select>
+
                 </div>
 
                 <div class="col-md-6" id="priceField" style="display:none;">
                     <label class="form-label fw-semibold">Precio</label>
                     <input type="number" name="price" class="form-control" step="0.01" placeholder="0.00">
+                    @error('price')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="col-12">
                     <label class="form-label fw-semibold">Descripción</label>
                     <textarea name="description" class="form-control" rows="3"></textarea>
+                    @error('description')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-12">
                     <label class="form-label fw-semibold">Archivo</label>
-                    <input type="file" name="file" class="form-control" required>
+                    <input type="file" name="file" class="form-control">
                     <div class="form-text">Formatos: PDF (máx. 10MB)</div> <!-- , Word o PowerPoint  -->
+                    @error('file')
+                    <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
             <div class="text-end mt-3">

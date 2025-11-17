@@ -1,18 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Documento - {{ $document->title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body { background-color:#f8f9fa; }
-        .btn-brown { background:#8B5E3C; color:#fff; }
-        .btn-brown:hover { background:#6f452b; }
-        .text-brown { color:#8B5E3C; }
-    </style>
-</head>
-<body>
+@extends('layouts.app')
+@section('content')
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold text-brown mb-0">
@@ -26,16 +13,16 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <strong>¡Ups!</strong> Hay algunos errores:<br>
-            <ul class="mb-0">
-                @foreach($errors->all() as $e)
-                    <li>{{ $e }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+{{--    @if($errors->any())--}}
+{{--        <div class="alert alert-danger">--}}
+{{--            <strong>¡Ups!</strong> Hay algunos errores:<br>--}}
+{{--            <ul class="mb-0">--}}
+{{--                @foreach($errors->all() as $e)--}}
+{{--                    <li>{{ $e }}</li>--}}
+{{--                @endforeach--}}
+{{--            </ul>--}}
+{{--        </div>--}}
+{{--    @endif--}}
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
@@ -45,9 +32,12 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Título</label>
+                        <label class="form-label fw-semibold">Título*</label>
                         <input type="text" name="title" class="form-control"
-                               value="{{ old('title', $document->title) }}" required>
+                               value="{{ old('title', $document->title) }}">
+                        @error('title')
+                        <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6">
@@ -60,6 +50,10 @@
                                 </option>
                             @endforeach
                         </select>
+                        @error('category_id')
+                        <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+
                     </div>
 
                     <div class="col-md-6">
@@ -74,11 +68,17 @@
                         <label class="form-label fw-semibold">Precio</label>
                         <input type="number" step="0.01" name="price" class="form-control"
                                value="{{ old('price', $document->price) }}" placeholder="0.00">
+                        @error('price')
+                        <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-12">
                         <label class="form-label fw-semibold">Descripción</label>
                         <textarea name="description" class="form-control" rows="3">{{ old('description', $document->description) }}</textarea>
+                        @error('description')
+                        <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6">
@@ -115,5 +115,4 @@ function togglePriceField() {
     priceField.style.display = (isFree == "0") ? 'block' : 'none';
 }
 </script>
-</body>
-</html>
+@endsection

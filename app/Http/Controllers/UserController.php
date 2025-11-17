@@ -24,10 +24,21 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
-            'role' => 'required|exists:roles,name'
+            'role'     => 'required|exists:roles,name'
+        ], [
+            'name.required'     => 'El nombre es obligatorio.',
+            'name.string'       => 'El nombre debe ser un texto válido.',
+            'name.max'          => 'El nombre no puede superar los 255 caracteres.',
+            'email.required'    => 'El correo electrónico es obligatorio.',
+            'email.email'       => 'Debe ser un correo electrónico válido.',
+            'email.unique'      => 'El correo electrónico ya está en uso.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min'      => 'La contraseña debe tener al menos 6 caracteres.',
+            'role.required'     => 'El rol es obligatorio.',
+            'role.exists'       => 'El rol seleccionado no es válido.'
         ]);
 
         $user = User::create([
@@ -50,9 +61,20 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => "required|email|unique:users,email,$user->id",
-            'role'  => 'required|exists:roles,name',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'nullable|min:6',
+            'role'     => 'required|exists:roles,name'
+        ], [
+            'name.required'     => 'El nombre es obligatorio.',
+            'name.string'       => 'El nombre debe ser un texto válido.',
+            'name.max'          => 'El nombre no puede superar los 255 caracteres.',
+            'email.required'    => 'El correo electrónico es obligatorio.',
+            'email.email'       => 'Debe ser un correo electrónico válido.',
+            'email.unique'      => 'El correo electrónico ya está en uso.',
+            'password.min'      => 'La contraseña debe tener al menos 6 caracteres.',
+            'role.required'     => 'El rol es obligatorio.',
+            'role.exists'       => 'El rol seleccionado no es válido.'
         ]);
 
         $user->update([

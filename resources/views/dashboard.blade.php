@@ -65,9 +65,9 @@
         <div class="col-lg-4 col-md-6">
             <div class="card text-center border-0 shadow-sm hover-card">
                 <div class="card-body">
-                    <i class="bi bi-file-earmark-text display-5 text-brown"></i>
-                    <h6 class="mt-3 fw-semibold text-secondary">Mis Documentos</h6>
-                    <h3 class="fw-bold mt-2">{{ Auth::user()->documents()->count() }}</h3>
+                    <i class="bi bi-chat-dots display-5 text-primary"></i>
+                    <h6 class="mt-3 fw-semibold text-secondary">Mis Comentarios</h6>
+                    <h3 class="fw-bold mt-2">{{ Auth::user()->comments()->count() }}</h3>
                 </div>
             </div>
         </div>

@@ -37,8 +37,18 @@ class RepositoryController extends Controller
             'file'        => 'required|file|mimes:pdf,doc,docx,ppt,pptx|max:10240',
             'category_id' => 'nullable|exists:categories,id',
             'price'       => 'nullable|numeric|min:0',
-        ],[
-            'file.max' => 'El archivo es muy pesado. Máximo 10MB.',
+        ], [
+            'title.required'       => 'El título es obligatorio.',
+            'title.string'         => 'El título debe ser un texto válido.',
+            'title.max'            => 'El título no puede superar los 255 caracteres.',
+            'description.string'   => 'La descripción debe ser un texto válido.',
+            'file.required'        => 'Debes subir un archivo.',
+            'file.file'            => 'El archivo no es válido.',
+            'file.mimes'           => 'El archivo debe ser PDF, DOC, DOCX, PPT o PPTX.',
+            'file.max'             => 'El archivo es muy pesado. Máximo 10MB.',
+            'category_id.exists'   => 'La categoría seleccionada no es válida.',
+            'price.numeric'        => 'El precio debe ser un número.',
+            'price.min'            => 'El precio no puede ser negativo.',
         ]);
 
         if ($validator->fails()) {
@@ -104,6 +114,14 @@ class RepositoryController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
             'price'       => 'nullable|numeric|min:0',
+        ], [
+            'title.required'       => 'El título es obligatorio.',
+            'title.string'         => 'El título debe ser un texto válido.',
+            'title.max'            => 'El título no puede superar los 255 caracteres.',
+            'description.string'   => 'La descripción debe ser un texto válido.',
+            'category_id.exists'   => 'La categoría seleccionada no es válida.',
+            'price.numeric'        => 'El precio debe ser un número.',
+            'price.min'            => 'El precio no puede ser negativo.',
         ]);
 
         $document->update([

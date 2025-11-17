@@ -14,44 +14,60 @@
                 <div class="card-body">
                     <form action="{{ route('announcements.update', $announcement->id) }}" method="POST">
                         @csrf @method('PUT')
-                        
+
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Título del Anuncio</label>
-                                <input type="text" name="title" class="form-control" 
-                                       value="{{ old('title', $announcement->title) }}" required>
+                                <label class="form-label fw-semibold">Título del Anuncio*</label>
+                                <input type="text" name="title" class="form-control"
+                                       value="{{ old('title', $announcement->title) }}">
+                                @error('title')
+                                <div class="text-danger small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Descripción</label>
                                 <textarea name="description" class="form-control" rows="3">{{ old('description', $announcement->description) }}</textarea>
+
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Hora de Inicio</label>
-                                <input type="datetime-local" name="start_time" class="form-control" 
-                                       value="{{ old('start_time', $announcement->start_time->format('Y-m-d\TH:i')) }}" required>
+                                <label class="form-label fw-semibold">Hora de Inicio*</label>
+                                <input type="datetime-local" name="start_time" class="form-control"
+                                       value="{{ old('start_time', $announcement->start_time->format('Y-m-d\TH:i')) }}" >
+                                @error('start_time')
+                                <div class="text-danger small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Hora de Fin</label>
-                                <input type="datetime-local" name="end_time" class="form-control" 
-                                       value="{{ old('end_time', $announcement->end_time->format('Y-m-d\TH:i')) }}" required>
+                                <label class="form-label fw-semibold">Hora de Fin*</label>
+                                <input type="datetime-local" name="end_time" class="form-control"
+                                       value="{{ old('end_time', $announcement->end_time->format('Y-m-d\TH:i')) }}" >
+                                @error('end_time')
+                                <div class="text-danger small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Link de la Reunión</label>
-                                <input type="url" name="link" class="form-control" 
+                                <label class="form-label fw-semibold">Link de la Reunión*</label>
+                                <input type="url" name="link" class="form-control"
                                        value="{{ old('link', $announcement->link) }}" placeholder="https://meet.google.com/...">
+                                @error('link')
+                                <div class="text-danger small">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Estado</label>
+                                <label class="form-label fw-semibold">Estado*</label>
                                 <select name="status" class="form-select" required>
                                     <option value="active" {{ $announcement->status == 'active' ? 'selected' : '' }}>Activo</option>
                                     <option value="inactive" {{ $announcement->status == 'inactive' ? 'selected' : '' }}>Inactivo</option>
                                     <option value="cancelled" {{ $announcement->status == 'cancelled' ? 'selected' : '' }}>Cancelado</option>
                                 </select>
+                                @error('status')
+                                <div class="text-danger small">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
