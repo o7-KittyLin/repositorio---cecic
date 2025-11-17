@@ -79,4 +79,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // Ventas por documento
     Route::get('/sales/document/{document}', [PurchaseController::class, 'salesDocumentDetail'])
         ->name('sales.documentDetail');
+
+    // Eliminar categorias
+    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])
+        ->name('categories.destroy');
+
 });

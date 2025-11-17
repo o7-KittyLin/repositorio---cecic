@@ -27,31 +27,57 @@
             </h2>
         </div>
 
-        <div class="d-flex gap-2">
-            <!-- Filtro por categoría -->
-            <form action="{{ route('repository.index') }}" method="GET" class="d-flex gap-2 align-items-center">
-                <select name="category_id" class="form-select" onchange="this.form.submit()" style="min-width: 200px;">
-                    <option value="">Todas las categorías</option>
-                    @foreach ($categories as $cat)
-                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                            {{ $cat->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @if (request('category_id'))
-                    <a href="{{ route('repository.index') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-x"></i>
-                    </a>
-                @endif
-            </form>
+<div class="d-flex gap-2">
+    <!-- Filtro por categoría -->
+    <form action="{{ route('repository.index') }}" method="GET" class="d-flex gap-2 align-items-center">
+        <select name="category_id" class="form-select" onchange="this.form.submit()" style="min-width: 200px;">
+            <option value="">Todas las categorías</option>
+            @foreach ($categories as $cat)
+                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                    {{ $cat->name }}
+                </option>
+            @endforeach
+        </select>
 
-            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">
-                <i class="bi bi-tags"></i> Nueva Categoría
-            </button>
-            <button class="btn btn-brown" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                <i class="bi bi-upload"></i> Subir documento
-            </button>
-        </div>
+        @if (request('category_id'))
+            <a href="{{ route('repository.index') }}" class="btn btn-outline-secondary" title="Quitar filtro">
+                <i class="bi bi-x"></i>
+            </a>
+        @endif
+    </form>
+
+    {{-- Botón para eliminar la categoría seleccionada --}}
+    @if (request('category_id'))
+        @php
+            $selectedCategory = $categories->firstWhere('id', request('category_id'));
+        @endphp
+
+        {{-- Formulario oculto que realmente hace el DELETE --}}
+        <form id="deleteCategoryForm"
+            action="{{ route('categories.destroy', request('category_id')) }}"
+            method="POST" class="d-inline">
+            @csrf
+            @method('DELETE')
+        </form>
+
+        {{-- Botón que solo abre el modal bonito --}}
+        <button type="button"
+                class="btn btn-outline-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmDeleteCategoryModal">
+            <i class="bi bi-trash"></i>
+        </button>
+    @endif
+
+
+    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+        <i class="bi bi-tags"></i> Nueva Categoría
+    </button>
+    <button class="btn btn-brown" data-bs-toggle="modal" data-bs-target="#uploadModal">
+        <i class="bi bi-upload"></i> Subir documento
+    </button>
+</div>
+
     </div>
 
     <!-- Mensajes -->
@@ -188,6 +214,7 @@
   </div>
 </div>
 
+
 <!-- Modal Crear Categoría -->
 <div class="modal fade" id="categoryModal" tabindex="-1">
   <div class="modal-dialog">
@@ -212,12 +239,60 @@
   </div>
 </div>
 
+<!-- Modal Confirmar Eliminación de Categoría -->
+<div class="modal fade" id="confirmDeleteCategoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+            <i class="bi bi-exclamation-triangle"></i> Eliminar categoría
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">
+            ¿Seguro que deseas eliminar la categoría
+            <strong>{{ $selectedCategory->name ?? 'seleccionada' }}</strong>?
+        </p>
+        <p class="text-muted">
+            Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" id="confirmDeleteCategoryBtn">
+            <i class="bi bi-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script>
 function togglePriceField() {
     const isFree = document.getElementById('is_free').value;
     const priceField = document.getElementById('priceField');
     priceField.style.display = (isFree == "0") ? 'block' : 'none';
 }
+
+function togglePriceField() {
+    const isFree = document.getElementById('is_free').value;
+    const priceField = document.getElementById('priceField');
+    priceField.style.display = (isFree == "0") ? 'block' : 'none';
+}
+
+// 🗑 Confirmar eliminación de categoría con modal
+document.addEventListener('DOMContentLoaded', function () {
+    const confirmDeleteBtn = document.getElementById('confirmDeleteCategoryBtn');
+    const deleteForm = document.getElementById('deleteCategoryForm');
+
+    if (confirmDeleteBtn && deleteForm) {
+        confirmDeleteBtn.addEventListener('click', function () {
+            deleteForm.submit();
+        });
+    }
+});
 </script>
 </body>
 </html>
