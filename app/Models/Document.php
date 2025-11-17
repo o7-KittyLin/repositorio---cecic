@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Document extends Model
 {
     use HasFactory;
-
+    use SoftDeletes;
     protected $fillable = [
         'user_id',
         'category_id',
@@ -22,7 +23,8 @@ class Document extends Model
         'likes_count',
         'files_count',
         'is_published',
-        'tags'
+        'tags',
+        'is_active'
     ];
 
     protected $casts = [
@@ -56,6 +58,12 @@ class Document extends Model
     {
         return $this->hasMany(Purchase::class);
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
 
     // Scopes
     public function scopePublished($query)
@@ -92,7 +100,7 @@ class Document extends Model
     public function isPurchasedBy($user)
     {
         if (!$user) return false;
-        
+
         return $this->purchases()
             ->where('user_id', $user->id)
             ->where('payment_status', 'completed')
@@ -102,8 +110,17 @@ class Document extends Model
     public function isLikedBy($user)
     {
         if (!$user) return false;
-        
+
         return $this->likes()
+            ->where('user_id', $user->id)
+            ->exists();
+    }
+
+    public function isFavoritedBy($user)
+    {
+        if (!$user) return false;
+
+        return $this->favorites()
             ->where('user_id', $user->id)
             ->exists();
     }

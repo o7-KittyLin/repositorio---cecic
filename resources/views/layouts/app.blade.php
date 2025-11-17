@@ -111,7 +111,7 @@
                 </a>
             </li>
 
-            <li><a href="" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <li><a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i> Dashboard
                 </a></li>
 

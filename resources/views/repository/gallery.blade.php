@@ -115,9 +115,11 @@
                 </form>
 
                 @auth
+                    @unless (Auth::user()->hasRole('Administrador'))
                     <a href="{{ route('purchases.my') }}" class="btn btn-outline-success">
                         <i class="bi bi-bag-check"></i> Mis Compras
                     </a>
+                    @endunless
                 @endauth
             </div>
         </div>

@@ -45,7 +45,7 @@
                                     </iframe>
 
                                     {{-- Overlay --}}
-                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex 
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex
                     justify-content-center align-items-center bg-dark bg-opacity-75 text-white"
                                         style="font-size: 1.2rem;">
                                         Vista previa — Compra el documento para ver completo
@@ -106,9 +106,17 @@
                                     <button type="submit" class="btn btn-outline-danger btn-sm">
                                         <i
                                             class="bi bi-heart{{ $document->isLikedBy(auth()->user()) ? '-fill' : '' }}"></i>
-                                        Like
+                                        {{ $document->isLikedBy(auth()->user()) ? 'Quitar Like' : 'Like' }}
                                     </button>
                                 </form>
+                                <form action="{{ route('documents.favorite', $document->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-warning btn-sm">
+                                        <i class="bi bi-star{{ $document->isFavoritedBy(auth()->user()) ? '-fill' : '' }}"></i>
+                                        {{ $document->isFavoritedBy(auth()->user()) ? 'Quitar Favorito' : ' Favorito' }}
+                                    </button>
+                                </form>
+
                             </div>
 
                             <div class="text-muted small">
