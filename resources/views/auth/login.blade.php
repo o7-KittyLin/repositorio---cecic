@@ -349,13 +349,19 @@
                         <input id="email" type="email" name="email"
                                value="{{ old('email') }}"
                                class="form-control" placeholder="ejemplo@correo.com"
-                               required autofocus>
+                               autofocus>
+                        @error('email')
+                            <span class="text-danger small">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label fw-semibold">Contraseña</label>
                         <input id="password" type="password" name="password"
-                               class="form-control" required>
+                               class="form-control">
+                        @error('password')
+                            <span class="text-danger small">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="form-check mb-3">
@@ -382,7 +388,7 @@
 
             </div>
         </div>
-        
+
         {{-- FOOTER --}}
         <footer class="pie cacao-footer" id="contacto">
             <div class="footer-container">
