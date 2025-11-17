@@ -34,13 +34,25 @@
         }
 
         #sidebar .sidebar-header {
-            padding: 20px;
-            background-color: #4e342e;
+            padding: 16px 12px;
+            background: linear-gradient(135deg, #5D4037, #3E2723); /* cacao bonito */
             text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
+        #sidebar .sidebar-header img {
+            max-width: 170px;
+            height: auto;
+            display: block;
+            margin-bottom: 4px;
+            margin-left: -20px;
+        }
+        
         #sidebar .nav-link {
             color: #ddd;
             padding: 12px 20px;
@@ -101,8 +113,9 @@
 
     <div id="sidebar">
         <div class="sidebar-header">
-            <i class="bi bi-mortarboard"></i> CECIC Admin
+            <img src="{{ asset('img/logos/logo4.png') }}" alt="Logo CECIC">
         </div>
+
 
         <ul class="nav flex-column mt-3">
 
