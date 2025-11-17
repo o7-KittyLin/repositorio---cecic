@@ -1,20 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Repositorio CECIC</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <style>
-        body { background-color:#f8f9fa; }
-        .btn-brown { background:#8B5E3C; color:#fff; }
-        .btn-brown:hover { background:#6f452b; }
-        .text-brown { color:#8B5E3C; }
-    </style>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('content')
 <div class="container py-5">
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -305,5 +291,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-</body>
-</html>
+@endsection

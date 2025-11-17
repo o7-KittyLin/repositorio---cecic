@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 Route::get('/repository/gallery', [RepositoryController::class, 'gallery'])->name('repository.gallery');
 

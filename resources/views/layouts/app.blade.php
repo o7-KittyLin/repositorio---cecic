@@ -105,31 +105,38 @@
         </div>
 
         <ul class="nav flex-column mt-3">
-            <li>
-                <a href="{{ url('/') }}" class="nav-link {{ request()->is('/') ? 'active' : '' }}">
-                    <i class="bi bi-house"></i> Inicio
-                </a>
-            </li>
 
+            @auth
             <li><a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i> Dashboard
                 </a></li>
-
+            @else
+            <li><a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                    <i class="bi bi-house"></i> Inicio
+                </a></li>
+            @endauth
             @role('Administrador')
-                <li><a href="{{ route('repository.index') }}"
-                        class="nav-link {{ request()->routeIs('repository.*') ? 'active' : '' }}">
-                        <i class="bi bi-file-earmark-text"></i> Repositorio
-                    </a></li>
-                <li><a href="{{ route('repository.gallery') }}"
-                        class="nav-link {{ request()->routeIs('repository.*') ? 'active' : '' }}">
-                        <i class="bi bi-file-earmark-text"></i> Documentos
-                    </a></li>
+            <li><a href="{{ route('repository.index') }}"
+                   class="nav-link {{ request()->routeIs('repository.index') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text"></i> Repositorio
+                </a></li>
+
+            <li><a href="{{ route('repository.gallery') }}"
+                   class="nav-link {{ request()->routeIs('repository.gallery') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text"></i> Documentos
+                </a></li>
+
             @endrole
 
             @role('Usuario')
                 <li><a href="{{ route('repository.gallery') }}"
                         class="nav-link {{ request()->routeIs('repository.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-text"></i> Documentos
+                    </a></li>
+
+                <li><a href="{{ route('favorites.my') }}"
+                        class="nav-link {{ request()->routeIs('favorites.*') ? 'active' : '' }}">
+                        <i class="bi bi-star-fill"></i> Favoritos
                     </a></li>
 
                 <li><a href="{{ route('purchases.my') }}"
@@ -155,6 +162,7 @@
             @endrole
         </ul>
 
+        @auth
         <div class="mt-auto text-center p-3">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
@@ -163,6 +171,7 @@
                 </button>
             </form>
         </div>
+        @endauth
     </div>
 
     <div id="content">
@@ -172,17 +181,19 @@
 
                 <span class="navbar-brand fw-bold">Panel de Control CECIC</span>
 
-                <div class="d-flex align-items-center ms-auto me-3">
-                    <div class="text-end me-3">
-                        <div class="fw-semibold text-brown">{{ Auth::user()->name }}</div>
-                        <small class="text-muted">
-                            {{ Auth::user()->roles->pluck('name')->implode(', ') }}
-                        </small>
-                    </div>
+                @auth
+                    <div class="d-flex align-items-center ms-auto me-3">
+                        <div class="text-end me-3">
+                            <div class="fw-semibold text-brown">{{ Auth::user()->name }}</div>
+                            <small class="text-muted">
+                                {{ Auth::user()->roles->pluck('name')->implode(', ') }}
+                            </small>
+                        </div>
 
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=8B5E3C&color=fff"
-                        alt="avatar" class="rounded-circle" width="40" height="40">
-                </div>
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=8B5E3C&color=fff"
+                             alt="avatar" class="rounded-circle" width="40" height="40">
+                    </div>
+                @endauth
 
             </div>
         </nav>
