@@ -271,7 +271,6 @@
             <nav>
                 {{-- Logo --}}
                 <div class="logo">
-                    {{-- Si tienes ruta home configurada, mejor usar route('home') --}}
                     <a href="{{ url('/') }}">
                         <img src="{{ asset('img/logos/logo2.png') }}" alt="Logo CECIC">
                     </a>
@@ -315,7 +314,6 @@
 
                 <!-- Logo / Título -->
                 <div class="logo-box">
-                    {{-- si quieres poner la imagen del logo arriba, descomenta esta línea --}}
                     {{-- <img src="{{ asset('img/logos/logo2.png') }}" alt="Logo CECIC"> --}}
                     <h3 class="title-brown mt-2">CECIC</h3>
                 </div>
