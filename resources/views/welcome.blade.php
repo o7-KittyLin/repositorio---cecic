@@ -343,14 +343,30 @@
     </main>
 
     {{-- FOOTER --}}
-    <footer class="pie" id="contacto">
-        <section class="texto-footer">
-            <p class="by"><strong>Contacto:</strong></p>
-            <p><a href="mailto:cecic@garmi.com">cecic@garmi.com</a></p>
-            <p class="raya"> - </p>
-            <p>+57-5788643771</p>
-            <p class="copy">© {{ date('Y') }} CECIC — Repositorio de Información del Cacao</p>
-        </section>
+    <footer class="pie cacao-footer" id="contacto">
+        <div class="footer-container">
+
+            <div class="footer-top">
+                <span class="footer-chip">🍫 Observatorio del Cacao · CECIC</span>
+            </div>
+
+            <div class="footer-bottom">
+
+                <div class="footer-left">
+                    <p><i class="bi bi-envelope-fill"></i> cecic@garmi.com</p>
+                    <p><i class="bi bi-telephone-fill"></i> +57 578 864 377</p>
+                </div>
+
+                <div class="footer-divider-vertical"></div>
+
+                <div class="footer-right">
+                    <p>© {{ date('Y') }} CECIC</p>
+                    <p>Repositorio del Cacao</p>
+                </div>
+
+            </div>
+
+        </div>
     </footer>
 
     {{-- Bootstrap JS (opcional) --}}
