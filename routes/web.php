@@ -98,7 +98,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         ->name('categories.destroy');
 
     // verificar compra
-
     Route::middleware(['auth'])->group(function () {
         Route::post('/documents/{document}/purchase', [PurchaseController::class, 'purchase'])
             ->name('documents.purchase');

@@ -36,11 +36,19 @@
                                 <i class="bi bi-pencil"></i>
                             </a>
 
-                            <form action="{{ route('users.destroy', $u->id) }}" method="POST" class="d-inline"
-                                  onsubmit="return confirm('¿Eliminar este usuario?')">
+                            <form id="deleteUserForm-{{ $u->id }}"
+                                action="{{ route('users.destroy', $u->id) }}"
+                                method="POST"
+                                class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-danger btn-sm">
+
+                                <button type="button"
+                                        class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteUserModal"
+                                        data-user-id="{{ $u->id }}"
+                                        data-user-name="{{ $u->name }}">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
@@ -56,4 +64,78 @@
     <div class="mt-3">{{ $users->links() }}</div>
 
 </div>
+
+<!-- Modal Confirmar Eliminación de Usuario -->
+<div class="modal fade" id="confirmDeleteUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+            <i class="bi bi-person-x"></i> Eliminar usuario
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+            ¿Seguro que deseas eliminar al usuario
+            <strong id="userNameToDelete">seleccionado</strong>?
+        </p>
+
+        <p class="text-muted mb-0">
+            Esta acción no se puede deshacer.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+        <button class="btn btn-danger" id="confirmDeleteUserBtn">
+            <i class="bi bi-trash"></i> Eliminar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    let currentUserId = null;
+    const modalEl = document.getElementById('confirmDeleteUserModal');
+    const confirmBtn = document.getElementById('confirmDeleteUserBtn');
+
+    if (modalEl) {
+        modalEl.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+
+            currentUserId = userId;
+
+            const nameSpan = modalEl.querySelector('#userNameToDelete');
+            if (nameSpan) {
+                nameSpan.textContent = userName || 'este usuario';
+            }
+        });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+            if (!currentUserId) return;
+
+            const form = document.getElementById('deleteUserForm-' + currentUserId);
+            if (form) {
+                form.submit();
+            }
+        });
+    }
+
+});
+</script>
+@endpush
+
 @endsection

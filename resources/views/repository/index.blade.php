@@ -122,12 +122,23 @@
                     <a href="{{ route('repository.edit', $doc->id) }}" class="btn btn-sm btn-warning">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <form method="POST" action="{{ route('repository.toggle', $doc->id) }}" class="d-inline">
-                        @csrf @method('PATCH')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar documento?')">
+                    <form id="deleteDocumentForm-{{ $doc->id }}"
+                        method="POST"
+                        action="{{ route('repository.toggle', $doc->id) }}"
+                        class="d-inline">
+                        @csrf
+                        @method('PATCH')
+
+                        <button type="button"
+                                class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteDocumentModal"
+                                data-doc-id="{{ $doc->id }}"
+                                data-doc-title="{{ $doc->title }}">
                             <i class="bi bi-trash"></i>
                         </button>
                     </form>
+
                 </td>
             </tr>
         @empty
@@ -228,6 +239,36 @@
   </div>
 </div>
 
+<!-- Modal Confirmar Eliminación de Documento -->
+<div class="modal fade" id="confirmDeleteDocumentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+            <i class="bi bi-file-earmark-x"></i> Eliminar documento
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">
+            ¿Seguro que deseas eliminar el documento
+            <strong id="docTitleToDelete">seleccionado</strong>?
+        </p>
+        <p class="text-muted mb-0">
+            Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" id="confirmDeleteDocumentBtn">
+            <i class="bi bi-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- Modal Crear Categoría -->
 <div class="modal fade" id="categoryModal" tabindex="-1">
@@ -307,5 +348,55 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+function togglePriceField() {
+    const isFree = document.getElementById('is_free').value;
+    const priceField = document.getElementById('priceField');
+    priceField.style.display = (isFree == "0") ? 'block' : 'none';
+}
+
+// 🗑 Confirmar eliminación de categoría con modal
+document.addEventListener('DOMContentLoaded', function () {
+    const confirmDeleteBtn = document.getElementById('confirmDeleteCategoryBtn');
+    const deleteForm = document.getElementById('deleteCategoryForm');
+
+    if (confirmDeleteBtn && deleteForm) {
+        confirmDeleteBtn.addEventListener('click', function () {
+            deleteForm.submit();
+        });
+    }
+
+    // 🗑 Confirmar eliminación de DOCUMENTO con modal
+    const docModal = document.getElementById('confirmDeleteDocumentModal');
+    const confirmDocBtn = document.getElementById('confirmDeleteDocumentBtn');
+    let currentDocId = null;
+
+    if (docModal) {
+        docModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const docId = button.getAttribute('data-doc-id');
+            const docTitle = button.getAttribute('data-doc-title');
+
+            currentDocId = docId;
+
+            const titleSpan = docModal.querySelector('#docTitleToDelete');
+            if (titleSpan) {
+                titleSpan.textContent = docTitle || 'este documento';
+            }
+        });
+    }
+
+    if (confirmDocBtn) {
+        confirmDocBtn.addEventListener('click', function () {
+            if (!currentDocId) return;
+
+            const form = document.getElementById('deleteDocumentForm-' + currentDocId);
+            if (form) {
+                form.submit();
+            }
+        });
+    }
+});
+
 </script>
 @endsection

@@ -121,7 +121,7 @@
                 <div class="col-12">
                     <label class="form-label fw-semibold">Archivo</label>
                     <input type="file" name="file" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx" required>
-                    <div class="form-text">Formatos permitidos: PDF, Word, PowerPoint (máx. 10MB)</div>
+                    <div class="form-text">Formatos permitidos: solo PDF (máx. 10MB)</div>
                 </div>
             </div>
             <div class="mt-4 text-end">
