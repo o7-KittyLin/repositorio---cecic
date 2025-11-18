@@ -389,7 +389,7 @@ body {
 .carrusel-aliados {
   position: relative;
   width: 90%;
-  max-width: 900px;
+  max-width: 700px;
   margin: 30px auto 10px;
   overflow: hidden;
   padding: 22px;
@@ -417,8 +417,8 @@ body {
 
 .slide img,
 .slide-aliado img {
-  width: 45%;
-  max-height: 260px;
+  width: 15%;
+  max-height: 200px;
   border-radius: 16px;
   object-fit: cover;
 }

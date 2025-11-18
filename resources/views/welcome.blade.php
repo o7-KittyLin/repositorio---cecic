@@ -118,7 +118,7 @@
             <h2 class="titulo">¿Qué es el CECIC?</h2>
             <div class="info-img-sobre-nosotros">
                 <div class="info-texto-sobre-nosotros">
-                    <img class="img-nosotros" src="{{ asset('img/gato.gif') }}" alt="Sobre Nosotros">
+                    <img class="img-nosotros" src="{{ asset('img/logos/logo3.png') }}" alt="Sobre Nosotros">
                     <div class="info-nosotros">
                         El <strong>Centro Especializado de Investigación del Cacao (CECIC)</strong> es una plataforma
                         dedicada a recopilar, organizar y facilitar el acceso a información científica, técnica y académica
@@ -205,7 +205,7 @@
             <div class="mision-vision-contenedor">
                 {{-- MISIÓN --}}
                 <div class="card-mv">
-                    <div class="mv-img" style="--bg:url('{{ asset('img/no-disponible.gif') }}')">
+                    <div class="mv-img" style="--bg:url('{{ asset('img/mision.png') }}')">
                         <div class="mv-piece"></div>
                         <div class="mv-piece"></div>
                         <div class="mv-piece"></div>
@@ -214,15 +214,14 @@
                     <div class="mv-texto">
                         <h4>Misión</h4>
                         <p>
-                            Desarrollar, organizar y transferir información y conocimiento sobre el cacao, facilitando la
-                            toma de decisiones y promoviendo la innovación en toda la cadena de valor.
+                            Promover la investigación, innovación y transferencia tecnológica en el cultivo y la agroindustria del cacao colombiano, fortaleciendo su productividad, sostenibilidad y valor agregado.
                         </p>
                     </div>
                 </div>
 
                 {{-- VISIÓN --}}
                 <div class="card-mv">
-                    <div class="mv-img" style="--bg:url('{{ asset('img/gato.gif') }}')">
+                    <div class="mv-img" style="--bg:url('{{ asset('img/vision.png') }}')">
                         <div class="mv-piece"></div>
                         <div class="mv-piece"></div>
                         <div class="mv-piece"></div>
@@ -231,8 +230,7 @@
                     <div class="mv-texto">
                         <h4>Visión</h4>
                         <p>
-                            Ser un referente nacional e internacional en la gestión de información y conocimiento del
-                            cacao, apoyando el desarrollo sostenible y competitivo del sector.
+                            Ser un centro líder que impulsa la innovación y el conocimiento para que el cacao colombiano crezca de forma sostenible y mejore la vida de quienes lo cultivan.
                         </p>
                     </div>
                 </div>
@@ -247,10 +245,10 @@
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
-                    <img src="{{ asset('img/cacao-gif.gif') }}" alt="Compromiso">
+                    <img src="{{ asset('img/unidos.png') }}" alt="Compromiso">
                     <div class="valor-contenido">
-                        <h4>Compromiso</h4>
-                        <p>Trabajamos con dedicación para apoyar el fortalecimiento del sector cacaotero.</p>
+                        <h4>Pertinencia</h4>
+                        <p>Trabajamos con propósito, enfocando nuestras acciones en las verdaderas necesidades del sector cacaotero y las comunidades que lo conforman.</p>
                     </div>
                 </div>
 
@@ -258,10 +256,10 @@
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
-                    <img src="{{ asset('img/gato.gif') }}" alt="Innovación">
+                    <img src="{{ asset('img/innovar.jpg') }}" alt="Innovación">
                     <div class="valor-contenido">
                         <h4>Innovación</h4>
-                        <p>Buscamos constantemente nuevas formas de organizar, analizar y compartir información.</p>
+                        <p>Impulsamos la creatividad, la ciencia y la tecnología para transformar el cultivo y la industria del cacao colombiano.</p>
                     </div>
                 </div>
 
@@ -269,10 +267,10 @@
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
-                    <img src="{{ asset('img/no-disponible.gif') }}" alt="Colaboración">
+                    <img src="{{ asset('img/trabajo.jpg') }}" alt="Colaboración">
                     <div class="valor-contenido">
-                        <h4>Colaboración</h4>
-                        <p>Promovemos el trabajo conjunto entre instituciones, productores y academia.</p>
+                        <h4>Corporatividad</h4>
+                        <p>Creemos en el trabajo conjunto: unimos esfuerzos con productores, instituciones y aliados para lograr un desarrollo sostenible y compartido.</p>
                     </div>
                 </div>
 
@@ -280,10 +278,10 @@
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
                     <div class="cacao-float"></div>
-                    <img src="{{ asset('img/cacao-gif.gif') }}" alt="Sostenibilidad">
+                    <img src="{{ asset('img/sostenible.png') }}" alt="Sostenibilidad">
                     <div class="valor-contenido">
                         <h4>Sostenibilidad</h4>
-                        <p>Impulsamos prácticas que respeten el ambiente y la biodiversidad.</p>
+                        <p>Cuidamos la tierra, el cacao y a las personas que lo cultivan, promoviendo prácticas responsables que protejan el medio ambiente y aseguren un futuro mejor para las nuevas generaciones.</p>
                     </div>
                 </div>
             </div>
@@ -321,16 +319,24 @@
 
                 <div class="imagenes-aliados">
                     <div class="slide-aliado">
-                        <img src="{{ asset('img/cacao-gif.gif') }}" alt="Aliado 1">
-                        <p class="descripcion-aliado">🤝 Aliado 1</p>
+                        <img src="{{ asset('img/tolima.png') }}" alt="Aliado 1">
+                        <p class="descripcion-aliado">Universidad del Tolima</p>
                     </div>
                     <div class="slide-aliado">
-                        <img src="{{ asset('img/gato.gif') }}" alt="Aliado 2">
-                        <p class="descripcion-aliado">🤝 Aliado 2</p>
+                        <img src="{{ asset('img/nariño.jpg') }}" alt="Aliado 2">
+                        <p class="descripcion-aliado">Universidad de Nariño</p>
                     </div>
                     <div class="slide-aliado">
-                        <img src="{{ asset('img/no-disponible.gif') }}" alt="Aliado 3">
-                        <p class="descripcion-aliado">🤝 Aliado 3</p>
+                        <img src="{{ asset('img/red.jpg') }}" alt="Aliado 3">
+                        <p class="descripcion-aliado">Red cacotera de Colombia</p>
+                    </div>
+                    <div class="slide-aliado">
+                        <img src="{{ asset('img/mesa.jpg') }}" alt="Aliado 3">
+                        <p class="descripcion-aliado">La mesa nacional de cacotera</p>
+                    </div>
+                    <div class="slide-aliado">
+                        <img src="{{ asset('img/fet.jpg') }}" alt="Aliado 3">
+                        <p class="descripcion-aliado">Fundación escuela tecnologica de Neiva</p>
                     </div>
                 </div>
 
