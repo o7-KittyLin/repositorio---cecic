@@ -11,7 +11,13 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Notifications\CustomVerifyEmailNotification;
+use App\Notifications\CustomResetPasswordNotification;
+
+
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
     use HasRoles;
@@ -90,6 +96,16 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+    
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmailNotification);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPasswordNotification($token));
     }
 
 }

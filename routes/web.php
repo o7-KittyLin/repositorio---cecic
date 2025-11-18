@@ -97,4 +97,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])
         ->name('categories.destroy');
 
+    // verificar compra
+
+    Route::middleware(['auth'])->group(function () {
+        Route::post('/documents/{document}/purchase', [PurchaseController::class, 'purchase'])
+            ->name('documents.purchase');
+
+        Route::get('/documents/{document}/confirm-purchase', [PurchaseController::class, 'confirmPurchase'])
+            ->middleware('signed')
+            ->name('documents.confirm-purchase');
+    });
+
 });

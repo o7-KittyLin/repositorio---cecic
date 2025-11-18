@@ -163,10 +163,12 @@
         }
 
         .logo-box img {
-            max-width: 90px;
+            max-width: 110px;
+            width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto 6px;
+            margin: 0 auto 10px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
         }
 
     /* ===== FOOTER ===== */
@@ -314,8 +316,7 @@
 
                 <!-- Logo / Título -->
                 <div class="logo-box">
-                    {{-- <img src="{{ asset('img/logos/logo2.png') }}" alt="Logo CECIC"> --}}
-                    <h3 class="title-brown mt-2">CECIC</h3>
+                    <img src="{{ asset('img/logos/logo3.png') }}" alt="Logo CECIC">
                 </div>
 
                 <h4 class="text-center mb-4 fw-bold">Iniciar Sesión</h4>
