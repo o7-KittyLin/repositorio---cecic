@@ -60,6 +60,9 @@ class PurchaseController extends Controller
     {
         $purchases = auth()->user()->purchases()
             ->with('document.category')
+            ->whereHas('document', function ($query) {
+                $query->where('is_active', 1); // Solo documentos activos
+            })
             ->where('payment_status', 'completed')
             ->latest()
             ->paginate(12);
@@ -72,9 +75,10 @@ class PurchaseController extends Controller
     $sales = Purchase::with(['user', 'document' => function($q){
         $q->withCount('purchases');
     }])
-    ->where('payment_status', 'completed')
-    ->latest()
-    ->paginate(15);
+        ->where('payment_status', 'completed')
+        ->whereHas('document') // <- esto asegura que haya documento
+        ->latest()
+        ->paginate(15);
 
     return view('purchases.sales', compact('sales'));
 }

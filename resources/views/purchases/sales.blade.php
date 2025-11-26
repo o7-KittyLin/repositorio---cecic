@@ -21,14 +21,16 @@
             </thead>
 
             <tbody>
-                @foreach ($sales as $s)
+            @forelse ($sales as $s)
                 <tr>
                     <td>
-                        {{ $s->document->title }}<br>
-                        <a href="{{ route('sales.documentDetail', $s->document->id) }}"
-                           class="btn btn-sm btn-outline-dark mt-1">
-                            <i class="bi bi-people"></i> Ver compradores
-                        </a>
+                        {{ optional($s->document)->title }}<br>
+                        @if($s->document)
+                            <a href="{{ route('sales.documentDetail', $s->document->id) }}"
+                               class="btn btn-sm btn-outline-dark mt-1">
+                                <i class="bi bi-people"></i> Ver compradores
+                            </a>
+                        @endif
                     </td>
 
                     <td>{{ $s->user->name }} <br>
@@ -44,12 +46,18 @@
                     <td>{{ $s->created_at->format('d/m/Y H:i') }}</td>
 
                     <td>
-                        <span class="badge bg-primary">
-                            {{ $s->document->purchases_count }}
-                        </span>
+            <span class="badge bg-primary">
+                {{ optional($s->document)->purchases_count ?? 0 }}
+            </span>
                     </td>
                 </tr>
-                @endforeach
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        No hay ventas disponibles
+                    </td>
+                </tr>
+            @endforelse
             </tbody>
 
         </table>
