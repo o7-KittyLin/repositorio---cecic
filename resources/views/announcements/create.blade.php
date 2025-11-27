@@ -197,7 +197,7 @@
 
             const t = to24Hour(val, startPeriodSelect.value);
             if(!isValidRange(t)) {
-                startError.textContent = 'Hora de inicio fuera de rango (8–12 AM / 1–5 PM)';
+                startError.textContent = 'Hora de inicio fuera de rango (8–12 PM / 1–5 PM)';
                 return false;
             }
 
@@ -222,7 +222,7 @@
             const endTime = to24Hour(endHourInput.value, endPeriodSelect.value);
 
             if(!isValidRange(endTime)) {
-                endError.textContent = 'Hora de fin fuera de rango (8–12 AM / 1–5 PM)';
+                endError.textContent = 'Hora de fin fuera de rango (8–12 PM / 1–5 PM)';
                 return false;
             }
 

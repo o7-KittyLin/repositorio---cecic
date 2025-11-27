@@ -69,7 +69,7 @@ class AnnouncementController extends Controller
 
         // Validación de franjas horarias
         if (!(($startHour >= 8 && $startHour <= 12) || ($startHour >= 13 && $startHour <= 17))) {
-            return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8–12 AM o 1–5 PM'])->withInput();
+            return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8–12 PM o 1–5 PM'])->withInput();
         }
         if (!(($endHour >= 8 && $endHour <= 12) || ($endHour >= 13 && $endHour <= 17))) {
             return back()->withErrors(['end_hour' => 'La hora de fin debe estar dentro de la franja permitida'])->withInput();
@@ -188,7 +188,7 @@ class AnnouncementController extends Controller
 
         // Validación de franjas horarias
         if (!(($startHour >= 8 && $startHour <= 12) || ($startHour >= 13 && $startHour <= 17))) {
-            return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8–12 AM o 1–5 PM'])->withInput();
+            return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8–12 PM o 1–5 PM'])->withInput();
         }
         if (!(($endHour >= 8 && $endHour <= 12) || ($endHour >= 13 && $endHour <= 17))) {
             return back()->withErrors(['end_hour' => 'La hora de fin debe estar dentro de la franja permitida'])->withInput();
