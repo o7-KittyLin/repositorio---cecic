@@ -15,7 +15,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Notifications\CustomVerifyEmailNotification;
 use App\Notifications\CustomResetPasswordNotification;
-
+use App\Services\DoubleHash;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -68,7 +68,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            //'password' => 'hashed',
         ];
     }
 
@@ -97,7 +97,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Comment::class);
     }
-    
+
     public function sendEmailVerificationNotification()
     {
         $this->notify(new CustomVerifyEmailNotification);

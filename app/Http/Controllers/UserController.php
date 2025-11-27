@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\DoubleHash;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
@@ -41,10 +42,11 @@ class UserController extends Controller
             'role.exists'       => 'El rol seleccionado no es válido.'
         ]);
 
+        $doubleHash = new DoubleHash();
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $doubleHash->make($request->password),
         ]);
 
         $user->assignRole($request->role);
@@ -82,8 +84,12 @@ class UserController extends Controller
             'email' => $request->email,
         ]);
 
+        $doubleHash = new DoubleHash();
+
         if ($request->filled('password')) {
-            $user->update(['password' => Hash::make($request->password)]);
+            $user->update([
+                'password' => $doubleHash->make($request->password)
+            ]);
         }
 
         $user->syncRoles([$request->role]);
