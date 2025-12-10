@@ -52,7 +52,7 @@ class ExportarDB extends Command
                 DB::table('users')->where('id', $user->id)->update([
                     'name' => $faker->name(),
                     'email' => $faker->unique()->userName() . '@local.test',
-                    'password' => bcrypt('password123'),
+                    'password' => bcrypt('prueba123'),
                     'profile_photo_path' => null,
                 ]);
             }

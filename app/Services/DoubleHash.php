@@ -9,7 +9,7 @@ class DoubleHash
 
     public function __construct()
     {
-        $this->pepper = env('DOUBLE_HASH_PEPPER', 'valor_defecto_xing');
+        $this->pepper = env ('DOUBLE_HASH_PEPPER', 'valor_defecto_xing');
 
         $this->hashLength = 32;
     }
@@ -18,7 +18,7 @@ class DoubleHash
     {
         $primerHash = hash('sha256', $data, true);
 
-        $doubleHash = sodium_crypto_generichash(
+        $doubleHash = \sodium_crypto_generichash(
             $primerHash . $this->pepper,
             '',
             $this->hashLength
@@ -32,7 +32,7 @@ class DoubleHash
         $hashBin = hex2bin($hexHash);
         $primerHash = hash('sha256', $data, true);
 
-        $doubleHash = sodium_crypto_generichash(
+        $doubleHash = \sodium_crypto_generichash(
             $primerHash . $this->pepper,
             '',
             $this->hashLength

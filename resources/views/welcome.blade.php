@@ -29,20 +29,26 @@
                 {{-- Logo --}}
                 <div class="logo">
                     <a href="#inicio">
-                        <img src="{{ asset('img/logos/logo2.png') }}" alt="Logo CECIC">
+                        <img src="{{ asset('img/logos/LogoCecic.png') }}" alt="Logo CECIC">
                     </a>
                 </div>
 
                 {{-- Menú principal --}}
                 <ul class="menu">
                     <li><a href="#inicio">Inicio</a></li>
-                    <li><a href="#que-es">¿Qué es el CECIC?</a></li>
-                    <li><a href="#que-encontraras">Contenido</a></li>
-                    <li><a href="#lugares">Lugar</a></li>
-                    <li><a href="#mision-vision">Misión y Visión</a></li>
-                    <li><a href="#valores">Valores</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle-custom">CECIC <span class="flecha">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#que-es">¿Quiénes somos?</a></li>
+                            <li><a href="#mision-vision">Misión y Visión</a></li>
+                            <li><a href="#lugares">Dónde estamos</a></li>
+                            <li><a href="#valores">Valores</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#areas">Áreas</a></li>
                     <li><a href="#politicas">Políticas</a></li>
                     <li><a href="#aliados">Aliados</a></li>
+                    <li><a href="#">Multimedia</a></li>
                     <li><a href="{{ route('repository.gallery') }}">Observatorio</a></li>
                 </ul>
 
@@ -127,39 +133,6 @@
                         Buscamos fortalecer la investigación, apoyar la toma de decisiones informadas y generar
                         oportunidades para toda la cadena de valor del cacao, desde el productor hasta el consumidor.
                     </div>
-                </div>
-            </div>
-        </section>
-
-        {{-- SECCIÓN: ¿Qué encontrarás aquí? (tarjetas tipo welcome) --}}
-        <section class="que-encontraras" id="que-encontraras">
-            <h2 class="titulo">¿Qué encontrarás aquí?</h2>
-            <div class="contenedor-cards">
-                <div class="feature-card">
-                    <i class="bi bi-journal-text"></i>
-                    <h5>Repositorio Digital</h5>
-                    <p>
-                        Accede a investigaciones, documentos técnicos, artículos, trabajos académicos y otros recursos
-                        especializados sobre el cacao, centralizados en un solo lugar.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <i class="bi bi-people"></i>
-                    <h5>Acceso para Usuarios</h5>
-                    <p>
-                        Crea tu cuenta para visualizar contenido ampliado, guardar favoritos, gestionar descargas y llevar
-                        un historial de consulta personalizado.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <i class="bi bi-upload"></i>
-                    <h5>Gestión de Documentos</h5>
-                    <p>
-                        Los administradores pueden subir, editar, clasificar y mantener actualizado el repositorio de forma
-                        ágil, segura y organizada.
-                    </p>
                 </div>
             </div>
         </section>
@@ -287,7 +260,80 @@
             </div>
         </section>
 
-        {{-- SECCIÓN: POLÍTICAS --}}
+        {{-- SECCIÓN: INFORMACIÓN DE LAS ÁREAS --}}
+        <section class="areas" id="areas">
+            <h2 class="titulo">Información de las áreas</h2>
+            <div class="areas-grid">
+
+                <div class="area-item">
+                    <div class="area-inner">
+                        <div class="area-front">
+                            <img src="{{ asset('img/gato.gif') }}" alt="área 1">
+                            <h4>área 1</h4>
+                        </div>
+                        <div class="area-back">
+                            <h4>área 1</h4>
+                            <p>Descripción breve del área 1...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="area-item">
+                    <div class="area-inner">
+                        <div class="area-front">
+                            <img src="{{ asset('img/cacao-gif.gif') }}" alt="área 2">
+                            <h4>área 2</h4>
+                        </div>
+                        <div class="area-back">
+                            <h4>área 2</h4>
+                            <p>Descripción breve del área 2...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="area-item">
+                    <div class="area-inner">
+                        <div class="area-front">
+                            <img src="{{ asset('img/cacao-gif.gif') }}" alt="área 3">
+                            <h4>área 3</h4>
+                        </div>
+                        <div class="area-back">
+                            <h4>área 3</h4>
+                            <p>Descripción breve del área 3...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="area-item">
+                    <div class="area-inner">
+                        <div class="area-front">
+                            <img src="{{ asset('img/no-disponible.gif') }}" alt="área 4">
+                            <h4>área 4</h4>
+                        </div>
+                        <div class="area-back">
+                            <h4>área 4</h4>
+                            <p>Descripción breve del área 4...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="area-item">
+                    <div class="area-inner">
+                        <div class="area-front">
+                            <img src="{{ asset('img/cacao-gif.gif') }}" alt="área 5">
+                            <h4>área 5</h4>
+                        </div>
+                        <div class="area-back">
+                            <h4>área 5</h4>
+                            <p>Descripción breve del área 5...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+{{-- SECCIÓN: POLÍTICAS --}}
         <section class="politicas" id="politicas">
             <h2 class="titulo">Políticas</h2>
             <div class="politicas-contenido">
@@ -383,3 +429,6 @@
 </body>
 
 </html>
+
+
+

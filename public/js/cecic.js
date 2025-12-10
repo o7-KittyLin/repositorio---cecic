@@ -1,159 +1,118 @@
 // CARUSEL + EFECTOS
-document.addEventListener("DOMContentLoaded", () => {
-  // =======================
-  // LUGARES
-  // =======================
-  const slidesLugares = document.querySelectorAll(".slide");
-  const prevBtnLugares = document.querySelector(".prev");
-  const nextBtnLugares = document.querySelector(".next");
-  const containerLugares = document.querySelector(".imagenes-lugar");
+document.addEventListener('DOMContentLoaded', () => {
 
-  let indexLugares = 0;
+  // ---------- DROPDOWN NAVBAR ----------
+  const dropdowns = document.querySelectorAll('.dropdown');
+  dropdowns.forEach(drop => {
+    const toggle = drop.querySelector('.dropdown-toggle-custom');
+    if (!toggle) return;
 
-  function updateSlideLugares() {
-    if (containerLugares) {
-      containerLugares.style.transform = `translateX(-${indexLugares * 100}%)`;
-    }
-  }
-
-  if (slidesLugares.length > 0 && prevBtnLugares && nextBtnLugares && containerLugares) {
-    prevBtnLugares.addEventListener("click", () => {
-      indexLugares = (indexLugares - 1 + slidesLugares.length) % slidesLugares.length;
-      updateSlideLugares();
-    });
-
-    nextBtnLugares.addEventListener("click", () => {
-      indexLugares = (indexLugares + 1) % slidesLugares.length;
-      updateSlideLugares();
-    });
-
-    updateSlideLugares();
-  }
-
-  // =======================
-  // ALIADOS
-  // =======================
-  const slidesAliados = document.querySelectorAll(".slide-aliado");
-  const prevBtnAliados = document.querySelector(".prev-aliado");
-  const nextBtnAliados = document.querySelector(".next-aliado");
-  const containerAliados = document.querySelector(".imagenes-aliados");
-
-  let indexAliados = 0;
-
-  function updateSlideAliados() {
-    if (containerAliados) {
-      containerAliados.style.transform = `translateX(-${indexAliados * 100}%)`;
-    }
-  }
-
-  if (slidesAliados.length > 0 && prevBtnAliados && nextBtnAliados && containerAliados) {
-    prevBtnAliados.addEventListener("click", () => {
-      indexAliados = (indexAliados - 1 + slidesAliados.length) % slidesAliados.length;
-      updateSlideAliados();
-    });
-
-    nextBtnAliados.addEventListener("click", () => {
-      indexAliados = (indexAliados + 1) % slidesAliados.length;
-      updateSlideAliados();
-    });
-
-    updateSlideAliados();
-  }
-
-  // =======================
-  // EJEMPLO FETCH (PokeAPI)
-  // =======================
-  const idtosearch = 1;
-  fetch(`https://pokeapi.co/api/v2/egg-group/${idtosearch}/`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Error en la respuesta de la API');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log("Datos de la API (ejemplo):");
-      console.log(data);
-    })
-    .catch(error => {
-      console.error('Hubo un problema con la petición fetch:', error);
-    });
-
-  // =======================
-  // POLÍTICAS - efecto 3D Tilt
-  // =======================
-  const politicas = document.querySelectorAll('.politica-box');
-
-  politicas.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * 10;
-      const rotateY = ((x - centerX) / centerX) * 10;
-
-      card.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
-    });
-
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'rotateX(0) rotateY(0)';
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // cerrar otros
+      dropdowns.forEach(d => { if (d !== drop) d.classList.remove('open'); });
+      drop.classList.toggle('open');
     });
   });
 
-  // =======================
-  // EJEMPLO tipo POST (protegido)
-  // =======================
-  const uploadForm = document.getElementById('upload-form');
-  const fileInput = document.getElementById('file-input');
+  document.addEventListener('click', () => dropdowns.forEach(d => d.classList.remove('open')));
 
-  if (uploadForm && fileInput) {
-    uploadForm.addEventListener('submit', function (event) {
-      event.preventDefault();
+  // ---------- SCROLL SUAVE UNIVERSAL ----------
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e){
+      const href = this.getAttribute('href');
+      if (!href || href === '#' || href.startsWith('javascript')) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const offset = -20;
+      const top = target.getBoundingClientRect().top + window.pageYOffset + offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+
+  // ---------- CARRUSEL LUGARES ----------
+  (function(){
+    const slides = document.querySelectorAll('.slide');
+    const prev = document.querySelector('.prev');
+    const next = document.querySelector('.next');
+    const container = document.querySelector('.imagenes-lugar');
+    if (!container || slides.length === 0 || !prev || !next) return;
+
+    let idx = 0;
+    function update(){ container.style.transform = `translateX(-${idx * 100}%)`; }
+    prev.addEventListener('click', () => { idx = (idx - 1 + slides.length) % slides.length; update(); });
+    next.addEventListener('click', () => { idx = (idx + 1) % slides.length; update(); });
+    update();
+  })();
+
+  // ---------- CARRUSEL ALIADOS ----------
+  (function(){
+    const slides = document.querySelectorAll('.slide-aliado');
+    const prev = document.querySelector('.prev-aliado');
+    const next = document.querySelector('.next-aliado');
+    const container = document.querySelector('.imagenes-aliados');
+    if (!container || slides.length === 0 || !prev || !next) return;
+
+    let idx = 0;
+    function update(){ container.style.transform = `translateX(-${idx * 100}%)`; }
+    prev.addEventListener('click', () => { idx = (idx - 1 + slides.length) % slides.length; update(); });
+    next.addEventListener('click', () => { idx = (idx + 1) % slides.length; update(); });
+    update();
+  })();
+
+  // ---------- POLÍTICAS: tilt 3D ----------
+  (function(){
+    const cards = document.querySelectorAll('.politica-box');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+        const rx = ((y - r.height/2) / r.height) * 10;
+        const ry = ((x - r.width/2) / r.width) * 10;
+        card.style.transform = `rotateX(${-rx}deg) rotateY(${ry}deg)`;
+      });
+      card.addEventListener('mouseleave', () => { card.style.transform = 'rotateX(0) rotateY(0)'; });
+    });
+  })();
+
+  // ---------- FORM POST (archivo) ----------
+  // No hay formulario #upload-form en welcome.blade.php; dejo el ejemplo comentado.
+  /*
+  (function(){
+    const uploadForm = document.getElementById('upload-form');
+    const fileInput = document.getElementById('file-input');
+    if (!uploadForm || !fileInput) return;
+    uploadForm.addEventListener('submit', function(e){
+      e.preventDefault();
       const file = fileInput.files[0];
-
-      if (!file) {
-        alert("Por favor selecciona un archivo para subir.");
-        return;
-      }
-
+      if (!file) return alert('Por favor selecciona un archivo para subir.');
       const formData = new FormData();
       formData.append('file', file);
       formData.append('descripcion', 'Archivo de prueba');
-
-      fetch('https://api.miservidor.com/subir-archivo', {
-        method: 'POST',
-        body: formData,
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Archivo subido exitosamente:', data);
-          alert('Archivo subido correctamente.');
-        })
-        .catch(error => {
-          console.error('Error al subir el archivo:', error);
-          alert('Hubo un error al subir el archivo.');
-        });
+      fetch('https://api.miservidor.com/subir-archivo', { method: 'POST', body: formData })
+        .then(r => r.json()).then(d => alert('Archivo subido correctamente.')).catch(err => alert('Hubo un error al subir el archivo.'));
     });
-  }
+  })();
+  */
 
-  // =======================
-  // SCROLL SUAVE -> "LUGARES"
-  // =======================
-  const enlaceLugares = document.querySelector('a[href="#lugares"]');
-  const seccionLugares = document.querySelector('#lugares');
-
-  if (enlaceLugares && seccionLugares) {
-    enlaceLugares.addEventListener('click', function (e) {
-      e.preventDefault();
-      const offset = -20;
-      const targetPosition = seccionLugares.getBoundingClientRect().top + window.pageYOffset + offset;
-
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-      });
+  // ---------- Small safety: ensure cacao-float elements get visible (in case CSS animation had delays) ----------
+  (function(){
+    const floats = document.querySelectorAll('.cacao-float');
+    floats.forEach(el => {
+      // ensure background-image exists (inline style set in blade)
+      const bg = el.style.backgroundImage;
+      if (!bg || bg === 'none') {
+        // fallback to default relative path (if needed)
+        el.style.backgroundImage = "url('/img/cacao-blanco.png')";
+      }
+      // Force opacity to 1 when animation starts (some browsers respect keyframes but keep initial opacity)
+      el.addEventListener('animationiteration', () => { el.style.opacity = ''; });
+      // set initial opacity to allow animation fade-in
+      setTimeout(() => { el.style.opacity = ''; }, 50);
     });
-  }
+  })();
+
 });
