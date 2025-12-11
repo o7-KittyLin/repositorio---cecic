@@ -37,7 +37,7 @@
 
         #sidebar .sidebar-header {
             padding: 16px 12px;
-            background: linear-gradient(135deg, #5D4037, #3E2723); /* cacao bonito */
+            background: linear-gradient(135deg, #5d4037, #3e2723);
             text-align: center;
             font-weight: 600;
             font-size: 0.95rem;
@@ -79,7 +79,6 @@
             margin-left: 250px;
             transition: all 0.3s ease;
             min-height: 100vh;
-            /* Para sticky footer */
             display: flex;
             flex-direction: column;
         }
@@ -96,7 +95,6 @@
 
         main {
             flex: 1;
-            /* Empuja el footer hacia abajo */
             padding: 1.5rem;
         }
 
@@ -105,6 +103,11 @@
             color: #fff;
             text-align: center;
             padding: 15px 0;
+        }
+
+        .sidebar-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 12px 0;
         }
     </style>
 
@@ -120,60 +123,98 @@
 
 
         <ul class="nav flex-column mt-3">
-
             @auth
-            <li><a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-speedometer2"></i> Dashboard
-                </a></li>
+                <li>
+                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
             @else
-            <li><a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
-                    <i class="bi bi-house"></i> Inicio
-                </a></li>
+                <li>
+                    <a href="{{ url('/') }}#inicio" class="nav-link">
+                        <i class="bi bi-house"></i> Inicio
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#cecicMenu" role="button" aria-expanded="false" aria-controls="cecicMenu">
+                        <span><i class="bi bi-building"></i> CECIC</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </a>
+                    <ul class="collapse ps-4" id="cecicMenu">
+                        <li><a class="nav-link" href="{{ url('/') }}#que-es">¿Quiénes somos?</a></li>
+                        <li><a class="nav-link" href="{{ url('/') }}#mision-vision">Misión y Visión</a></li>
+                        <li><a class="nav-link" href="{{ url('/') }}#lugares">Dónde estamos</a></li>
+                        <li><a class="nav-link" href="{{ url('/') }}#valores">Valores</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="{{ url('/') }}#areas" class="nav-link">
+                        <i class="bi bi-grid"></i> Áreas
+                    </a>
+                </li>
             @endauth
+
+            <li>
+                <a href="{{ route('multimedia.index') }}" class="nav-link {{ request()->routeIs('multimedia.index') ? 'active' : '' }}">
+                    <i class="bi bi-collection-play"></i> Multimedia
+                </a>
+            </li>
+
+            @guest
+                <li>
+                    <a href="{{ url('/') }}#politicas" class="nav-link">
+                        <i class="bi bi-shield-check"></i> Políticas
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url('/') }}#aliados" class="nav-link">
+                        <i class="bi bi-people"></i> Aliados
+                    </a>
+                </li>
+            @endguest
+
+            <li>
+                <a href="{{ route('repository.gallery') }}" class="nav-link {{ request()->routeIs('repository.gallery') ? 'active' : '' }}">
+                    <i class="bi bi-folder2-open"></i> Observatorio
+                </a>
+            </li>
+
             @role('Administrador')
-            <li><a href="{{ route('repository.index') }}"
-                   class="nav-link {{ request()->routeIs('repository.index') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i> Repositorio
-                </a></li>
-
-            <li><a href="{{ route('repository.gallery') }}"
-                   class="nav-link {{ request()->routeIs('repository.gallery') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i> Documentos
-                </a></li>
-
+                <div class="sidebar-divider"></div>
+                <li>
+                    <a href="{{ route('repository.index') }}" class="nav-link {{ request()->routeIs('repository.index') ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-text"></i> Repositorio
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i> Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('sales.index') }}" class="nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
+                        <i class="bi bi-cash-coin"></i> Ventas
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('announcements.index') }}" class="nav-link">
+                        <i class="bi bi-megaphone"></i> Anuncios
+                    </a>
+                </li>
             @endrole
 
             @role('Usuario')
-                <li><a href="{{ route('repository.gallery') }}"
-                        class="nav-link {{ request()->routeIs('repository.*') ? 'active' : '' }}">
-                        <i class="bi bi-file-earmark-text"></i> Documentos
-                    </a></li>
-
-                <li><a href="{{ route('favorites.my') }}"
-                        class="nav-link {{ request()->routeIs('favorites.*') ? 'active' : '' }}">
+                <div class="sidebar-divider"></div>
+                <li>
+                    <a href="{{ route('favorites.my') }}" class="nav-link {{ request()->routeIs('favorites.*') ? 'active' : '' }}">
                         <i class="bi bi-star-fill"></i> Favoritos
-                    </a></li>
-
-                <li><a href="{{ route('purchases.my') }}"
-                        class="nav-link {{ request()->routeIs('purchases.my') ? 'active' : '' }}">
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('purchases.my') }}" class="nav-link {{ request()->routeIs('purchases.my') ? 'active' : '' }}">
                         <i class="bi bi-bag-check"></i> Mis Compras
-                    </a></li>
-            @endrole
-
-            @role('Administrador')
-                <li><a href="{{ route('users.index') }}"
-                        class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                        <i class="bi bi-people"></i> Usuarios
-                    </a></li>
-
-                <li><a href="{{ route('sales.index') }}"
-                        class="nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
-                        <i class="bi bi-cash-coin"></i> Ventas
-                    </a></li>
-
-                <li><a href="{{ route('announcements.index') }}" class="nav-link">
-                        <i class="bi bi-megaphone"></i> Anuncios
-                    </a></li>
+                    </a>
+                </li>
             @endrole
         </ul>
 
@@ -194,7 +235,19 @@
         <nav class="navbar navbar-expand-lg navbar-light sticky-top">
             <div class="container-fluid">
 
-                <span class="navbar-brand fw-bold">Panel de Control CECIC</span>
+                @guest
+                    @php
+                        $guestTitle = 'CECIC | Observatorio del Cacao';
+                        if (request()->routeIs('multimedia.index')) {
+                            $guestTitle = 'CECIC | Multimedia';
+                        } elseif (request()->routeIs('repository.gallery')) {
+                            $guestTitle = 'CECIC | Observatorio';
+                        }
+                    @endphp
+                    <span class="navbar-brand fw-bold">{{ $guestTitle }}</span>
+                @else
+                    <span class="navbar-brand fw-bold">Panel de Control CECIC</span>
+                @endguest
 
                 @auth
                     <div class="d-flex align-items-center ms-auto me-3">
@@ -225,6 +278,20 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const collapseEl = document.getElementById('cecicMenu');
+            if (collapseEl && typeof bootstrap !== 'undefined') {
+                const links = collapseEl.querySelectorAll('.nav-link');
+                links.forEach(link => {
+                    link.addEventListener('click', () => {
+                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+                        bsCollapse.hide();
+                    });
+                });
+            }
+        });
+    </script>
     @stack('scripts')
 
 </body>

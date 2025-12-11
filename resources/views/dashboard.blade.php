@@ -135,13 +135,6 @@
     </div>
     @endhasrole
 
-    <!-- Anuncios activos -->
-    <div class="row">
-        <div class="col-12">
-            @include('components.announcements')
-        </div>
-    </div>
-
     <!-- Documentos recientes para usuario -->
     @hasrole('Usuario')
     <div class="row mt-4">

@@ -747,6 +747,93 @@ body {
   line-height: 1.5;
 }
 
+/* ---------------- ANUNCIOS / MULTIMEDIA ---------------- */
+.anuncios-publicos,
+.multimedia-publica {
+  margin-top: 35px;
+}
+
+.anuncios-grid,
+.multimedia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  padding: 24px 20px 34px;
+}
+
+.anuncio-card,
+.multimedia-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+  border: 1px solid rgba(62,39,35,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.anuncio-header,
+.multimedia-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.anuncio-fecha {
+  color: #5d4037;
+  font-weight: 600;
+}
+
+.tipo-reunion {
+  background: #ffe082;
+  color: #3e2723;
+}
+
+.tipo-multimedia {
+  background: #b3e5fc;
+  color: #0d47a1;
+}
+
+.anuncio-card h4,
+.multimedia-card h4 {
+  margin: 4px 0;
+  color: #3e2723;
+}
+
+.anuncio-card p,
+.multimedia-card p {
+  margin: 0;
+  color: #4a403a;
+  font-size: 0.95rem;
+}
+
+.anuncio-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4e342e;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.anuncio-link:hover {
+  color: #d4af37;
+}
+
+.anuncio-vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 18px;
+  border: 1px dashed rgba(62,39,35,0.2);
+  border-radius: 12px;
+  color: #7a6a60;
+  background: #fdf7ec;
+}
+
 
 @keyframes floatCacao {
   0% {

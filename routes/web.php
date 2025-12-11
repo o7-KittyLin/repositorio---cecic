@@ -16,6 +16,21 @@ Route::get('/', function () {
 
 Route::get('/repository/gallery', [RepositoryController::class, 'gallery'])->name('repository.gallery');
 
+// Multimedia pública (anuncios y videos sin login)
+Route::get('/multimedia', function () {
+    $reuniones = \App\Models\Announcement::visible()
+        ->where('type', 'reunion')
+        ->orderBy('start_time', 'desc')
+        ->get();
+
+    $multimedia = \App\Models\Announcement::visible()
+        ->where('type', 'multimedia')
+        ->orderBy('start_time', 'desc')
+        ->get();
+
+    return view('multimedia', compact('reuniones', 'multimedia'));
+})->name('multimedia.index');
+
 // Descargar documento (solo si gratis o comprado)
     Route::get('documents/download/{document}', [DocumentController::class, 'download'])
         ->name('documents.download');

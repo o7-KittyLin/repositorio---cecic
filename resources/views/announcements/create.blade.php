@@ -35,6 +35,17 @@
 
                             <div class="row g-3">
 
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Tipo*</label>
+                                    <select name="type" class="form-select">
+                                        <option value="reunion" {{ old('type')=='reunion' ? 'selected' : '' }}>Reunión</option>
+                                        <option value="multimedia" {{ old('type')=='multimedia' ? 'selected' : '' }}>Multimedia</option>
+                                    </select>
+                                    @error('type')
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                                 <!-- Fecha de inicio -->
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold">Fecha de Inicio*</label>
@@ -61,7 +72,7 @@
                                     @error('start_period')
                                     <div class="text-danger small">{{ $message }}</div>
                                     @enderror
-                                    <small class="text-muted">Seleccione hora entre 8 AM–12 PM o 1 PM–5 PM</small>
+                                    <small class="text-muted">Seleccione hora entre 8-12 AM o 1-5 PM</small>
                                 </div>
 
                                 <!-- Hora de fin -->
@@ -85,25 +96,15 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Link de la Reunión*</label>
+                                <label class="form-label fw-semibold">Link del contenido*</label>
                                 <input type="url" name="link" class="form-control"
-                                       value="{{ old('link') }}" placeholder="https://meet.google.com/...">
+                                       value="{{ old('link') }}" placeholder="https://youtube.com/... o https://meet.google.com/...">
                                 @error('link')
                                     <div class="text-danger small">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Estado*</label>
-                                <select name="status" class="form-select" >
-                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Activo</option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactivo</option>
-                                    <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>Cancelado</option>
-                                </select>
-                                @error('status')
-                                    <div class="text-danger small">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            <input type="hidden" name="status" value="active">
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
@@ -138,6 +139,7 @@
         const startError = document.getElementById('start_time_error');
         const endError = document.getElementById('end_time_error');
 
+        const typeSelect = document.querySelector('select[name="type"]');
         let holidays = [];
 
         // Traer feriados de Colombia
@@ -176,7 +178,7 @@
 
         // Validar formato HH:MM
         function isValidFormat(hourStr) {
-            return /^\d{1,2}:\d{2}$/.test(hourStr);
+            return /^\\d{1,2}:\\d{2}$/.test(hourStr);
         }
 
         // Validar franjas horarias
@@ -197,7 +199,7 @@
 
             const t = to24Hour(val, startPeriodSelect.value);
             if(!isValidRange(t)) {
-                startError.textContent = 'Hora de inicio fuera de rango (8–12 PM / 1–5 PM)';
+                startError.textContent = 'Hora de inicio fuera de rango (8-12 AM / 1-5 PM)';
                 return false;
             }
 
@@ -222,7 +224,7 @@
             const endTime = to24Hour(endHourInput.value, endPeriodSelect.value);
 
             if(!isValidRange(endTime)) {
-                endError.textContent = 'Hora de fin fuera de rango (8–12 PM / 1–5 PM)';
+                endError.textContent = 'Hora de fin fuera de rango (8-12 AM / 1-5 PM)';
                 return false;
             }
 
@@ -242,6 +244,20 @@
         startPeriodSelect.addEventListener('change', validateStart);
         endHourInput.addEventListener('input', validateEnd);
         endPeriodSelect.addEventListener('change', validateEnd);
+
+        function toggleScheduleFields() {
+            const isReunion = typeSelect && typeSelect.value === 'reunion';
+            [startDate, startHourInput, startPeriodSelect, endHourInput, endPeriodSelect].forEach(el => {
+                if (!el) return;
+                el.disabled = !isReunion;
+                el.closest('.col-md-4')?.classList.toggle('opacity-50', !isReunion);
+            });
+        }
+
+        if (typeSelect) {
+            typeSelect.addEventListener('change', toggleScheduleFields);
+            toggleScheduleFields();
+        }
 
     });
 </script>

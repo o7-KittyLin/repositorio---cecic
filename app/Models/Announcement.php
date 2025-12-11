@@ -12,6 +12,7 @@ class Announcement extends Model
     protected $fillable = [
         'title',
         'description',
+        'type',
         'start_time',
         'end_time',
         'link',
@@ -29,6 +30,23 @@ class Announcement extends Model
         return $query->where('status', 'active')
                     ->where('start_time', '<=', now())
                     ->where('end_time', '>=', now());
+    }
+
+    public function scopeVisible($query)
+    {
+        return $query->where('status', 'active')
+                     ->where(function ($q) {
+                         $q->where('type', 'multimedia')
+                           ->orWhere(function ($qq) {
+                               $qq->where('type', 'reunion')
+                                  ->where('end_time', '>=', now());
+                           });
+                     });
+    }
+
+    public function scopeType($query, string $type)
+    {
+        return $query->where('type', $type);
     }
 
     // Scope para anuncios programados

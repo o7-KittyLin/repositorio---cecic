@@ -23,6 +23,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Título</th>
+                            <th>Tipo</th>
                             <th>Inicio</th>
                             <th>Fin</th>
                             <th>Estado</th>
@@ -33,17 +34,22 @@
                         @forelse($announcements as $announcement)
                             <tr>
                                 <td class="fw-semibold">{{ $announcement->title }}</td>
+                                <td>
+                                    <span class="badge {{ $announcement->type === 'multimedia' ? 'bg-info text-dark' : 'bg-primary' }}">
+                                        {{ $announcement->type === 'multimedia' ? 'Multimedia' : 'Reunión' }}
+                                    </span>
+                                </td>
                                 <td>{{ $announcement->start_time->format('d/m/Y H:i') }}</td>
                                 <td>{{ $announcement->end_time->format('d/m/Y H:i') }}</td>
                                 <td>
-                                    @if($announcement->status == 'active' && $announcement->start_time <= now() && $announcement->end_time >= now())
-                                        <span class="badge bg-success">En Curso</span>
-                                    @elseif($announcement->status == 'active' && $announcement->start_time > now())
-                                        <span class="badge bg-warning text-dark">Programado</span>
-                                    @elseif($announcement->status == 'cancelled')
+                                    @if($announcement->status == 'cancelled')
                                         <span class="badge bg-danger">Cancelado</span>
-                                    @else
+                                    @elseif($announcement->status == 'inactive' || $announcement->end_time < now())
                                         <span class="badge bg-secondary">Inactivo</span>
+                                    @elseif($announcement->start_time > now())
+                                        <span class="badge bg-warning text-dark">Programado</span>
+                                    @else
+                                        <span class="badge bg-success">En curso</span>
                                     @endif
                                 </td>
                                 <td>
@@ -70,7 +76,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
+                                <td colspan="6" class="text-center text-muted py-4">
                                     <i class="bi bi-megaphone display-6 d-block mb-2"></i>
                                     No hay anuncios registrados.
                                 </td>
