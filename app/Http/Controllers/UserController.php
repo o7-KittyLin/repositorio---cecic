@@ -5,31 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\DoubleHash;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    private function ensureAdmin(): void
+    {
+        if (!auth()->user() || !auth()->user()->hasRole('Administrador')) {
+            abort(403);
+        }
+    }
+
     public function index()
     {
-<<<<<<< ours
         $this->ensureAdmin();
-        $users = User::with('roles')->whereHas('roles', fn()=>->where('name','Empleado'))->paginate(10);
-=======
+
         $users = User::with('roles')->paginate(10);
->>>>>>> theirs
         return view('users.index', compact('users'));
     }
 
     public function create()
     {
+        $this->ensureAdmin();
         $roles = Role::whereIn('name', ['Administrador', 'Empleado'])->get();
         return view('users.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
+        $this->ensureAdmin();
+
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
@@ -37,13 +43,8 @@ class UserController extends Controller
             'role'     => 'required|exists:roles,name'
         ]);
 
-<<<<<<< ours
-        $allowed = ['Empleado'];
-        if (!in_array($request->role, $allowed)) {
-=======
         $allowed = ['Administrador', 'Empleado'];
-        if (! in_array($request->role, $allowed)) {
->>>>>>> theirs
+        if (!in_array($request->role, $allowed)) {
             return back()->withErrors(['role' => 'Rol no permitido.'])->withInput();
         }
 
@@ -61,17 +62,27 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $isAdmin = auth()->user()->hasRole('Administrador');
+        if (!$isAdmin && auth()->id() !== $user->id) {
+            abort(403);
+        }
+
         $roles = Role::whereIn('name', ['Administrador', 'Empleado'])->get();
-        return view('users.edit', compact('user','roles'));
+        return view('users.edit', compact('user', 'roles', 'isAdmin'));
     }
 
     public function update(Request $request, User $user)
     {
+        $isAdmin = auth()->user()->hasRole('Administrador');
+        if (!$isAdmin && auth()->id() !== $user->id) {
+            abort(403);
+        }
+
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:6',
-            'role'     => 'required|exists:roles,name'
+            'role'     => 'nullable|exists:roles,name'
         ], [
             'name.required'     => 'El nombre es obligatorio.',
             'name.string'       => 'El nombre debe ser un texto válido.',
@@ -80,7 +91,6 @@ class UserController extends Controller
             'email.email'       => 'Debe ser un correo electrónico válido.',
             'email.unique'      => 'El correo electrónico ya está en uso.',
             'password.min'      => 'La contraseña debe tener al menos 6 caracteres.',
-            'role.required'     => 'El rol es obligatorio.',
             'role.exists'       => 'El rol seleccionado no es válido.',
         ]);
 
@@ -97,34 +107,16 @@ class UserController extends Controller
 
         $user->save();
 
-<<<<<<< ours
         if ($isAdmin && $request->filled('role')) {
-<<<<<<< ours
-            $allowed = ['Empleado'];
-            if (!in_array($request->role, $allowed)) {
-=======
             $allowed = ['Administrador', 'Empleado'];
-            if (! in_array($request->role, $allowed)) {
->>>>>>> theirs
+            if (!in_array($request->role, $allowed)) {
                 return back()->withErrors(['role' => 'Rol no permitido.'])->withInput();
             }
             $user->syncRoles([$request->role]);
-=======
-        $allowed = ['Administrador', 'Empleado'];
-        if (! in_array($request->role, $allowed)) {
-            return back()->withErrors(['role' => 'Rol no permitido.'])->withInput();
->>>>>>> theirs
         }
-        $user->syncRoles([$request->role]);
 
         if ($passwordChanged) {
-            // Forzamos re-login usando guardia actual (session)
-            $guard = Auth::guard();
-            if (method_exists($guard, 'login')) {
-                $guard->login($user);
-            } else {
-                Auth::setUser($user);
-            }
+            Auth::setUser($user);
             $request->session()->regenerate();
         }
 
@@ -133,8 +125,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $this->ensureAdmin();
         $user->delete();
         return back()->with('success', 'Usuario eliminado.');
     }
-
 }
