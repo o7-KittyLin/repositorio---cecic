@@ -6,7 +6,6 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Tarjeta */
         .card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: none;
@@ -20,7 +19,6 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
         }
 
-        /* Card Body */
         .card-body {
             background: #fff;
             padding: 1rem;
@@ -28,7 +26,6 @@
             flex-direction: column;
         }
 
-        /* Preview */
         .preview-frame {
             height: 220px;
             width: 100%;
@@ -38,7 +35,6 @@
             border-radius: 12px 12px 0 0;
         }
 
-        /* Botones personalizados */
         .btn-brown {
             background: #8B5E3C;
             color: #fff;
@@ -49,66 +45,9 @@
             background: #6f452b;
         }
 
-        /* Texto */
         .text-brown {
             color: #8B5E3C;
         }
-
-        /* Badges */
-        .badge-free {
-            background-color: #198754;
-            color: #fff;
-        }
-
-        .badge-paid {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        .badge-purchased {
-            background-color: #0d6efd;
-            color: #fff;
-        }
-
-        /* Overlay Preview */
-        .preview-overlay {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px 12px 0 0;
-        }
-
-        .preview-overlay::after {
-            content: "Vista Previa";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            opacity: 0;
-        }
-
-        .preview-overlay:hover::after {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
-
-        /* Texto pequeño */
-        .card-text {
-            font-size: 0.875rem;
-            color: #6c757d;
-        }
-
-        /* Información adicional */
-        .card .small.text-muted {
-            font-size: 0.8rem;
-        }
-
     </style>
 
     <div class="container py-5">
@@ -116,10 +55,6 @@
         <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center gap-3">
-{{--                <a href="{{ auth()->check() ? route('dashboard') : route('home') }}" class="btn btn-outline-secondary">--}}
-{{--                    <i class="bi bi-house-door"></i> Inicio--}}
-{{--                </a>--}}
-
                 <h2 class="fw-bold text-brown mb-0">
                     <i class="bi bi-collection"></i> Galería del Repositorio
                 </h2>
@@ -127,12 +62,10 @@
 
             <div class="d-flex gap-2 align-items-center">
                 <form action="{{ route('repository.gallery') }}" method="GET" class="d-flex gap-2 align-items-center">
-                    <select name="category_id" class="form-select" onchange="this.form.submit()"
-                        style="min-width: 200px;">
+                    <select name="category_id" class="form-select" onchange="this.form.submit()" style="min-width: 200px;">
                         <option value="">Todas las categorías</option>
                         @foreach ($categories as $cat)
-                            <option value="{{ $cat->id }}"
-                                {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                            <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
                                 {{ $cat->name }}
                             </option>
                         @endforeach
@@ -161,29 +94,34 @@
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
+        @if (session('info'))
+            <div class="alert alert-info">{{ session('info') }}</div>
+        @endif
 
         <!-- Tarjetas -->
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             @forelse($documents as $doc)
                 @php
                     $isPurchased = auth()->check() ? $doc->isPurchasedBy(auth()->user()) : false;
+                    $pendingRequest = auth()->check() ? $doc->hasPendingRequest(auth()->user()) : null;
                     $canDownload = $doc->is_free || $isPurchased || (auth()->check() && auth()->user()->hasRole('Administrador'));
                 @endphp
 
                 <div class="col">
                     <a href="{{ route('documents.show', $doc->id) }}" class="text-decoration-none text-dark">
                         <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
-                            <div class="position-relative">
+                            <div class="position-relative preview-overlay-container" style="height:180px; border-radius: .5rem .5rem 0 0; overflow:hidden;">
                                 @if (Str::endsWith($doc->file_path, '.pdf'))
-                                    <iframe src="{{ asset('storage/' . $doc->file_path) }}#toolbar=0&navpanes=0&scrollbar=0"
-                                            class="w-100 preview-frame" style="height:180px; border:none; border-radius: .5rem  .5rem 0 0;">
-                                    </iframe>
+                                    <iframe src="{{ asset('storage/' . $doc->file_path) }}#page=1&toolbar=0&navpanes=0&scrollbar=0"
+                                            class="w-100 h-100 preview-frame" style="border:none; pointer-events: none;"></iframe>
                                 @else
-                                    <div class="d-flex align-items-center justify-content-center bg-light preview-frame text-muted"
-                                         style="height:180px; border-radius: .5rem  .5rem 0 0;">
+                                    <div class="d-flex align-items-center justify-content-center bg-light preview-frame text-muted h-100 w-100">
                                         <i class="bi bi-file-earmark-text fs-1"></i>
                                     </div>
                                 @endif
+                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-25 text-white">
+                                    <small>Vista previa protegida</small>
+                                </div>
                             </div>
 
                             <div class="card-body d-flex flex-column">
@@ -217,13 +155,19 @@
                                                 <i class="bi bi-download"></i>
                                             </a>
                                         @elseif(!$doc->is_free && auth()->check())
-                                            <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
-                                                    data-bs-target="#purchaseModal"
-                                                    data-document-id="{{ $doc->id }}"
-                                                    data-document-title="{{ $doc->title }}"
-                                                    data-document-price="{{ $doc->price }}">
-                                                <i class="bi bi-cart-plus"></i>
-                                            </button>
+                                            @if($pendingRequest)
+                                                <button class="btn btn-sm btn-outline-secondary me-2" disabled>
+                                                    <i class="bi bi-hourglass-split"></i>
+                                                </button>
+                                            @else
+                                                <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
+                                                        data-bs-target="#purchaseModal"
+                                                        data-document-id="{{ $doc->id }}"
+                                                        data-document-title="{{ $doc->title }}"
+                                                        data-document-price="{{ $doc->price }}">
+                                                    <i class="bi bi-cart-plus"></i>
+                                                </button>
+                                            @endif
                                         @elseif(!$doc->is_free && !auth()->check())
                                             <a href="{{ route('login') }}?redirect=purchase&doc={{ $doc->id }}" class="btn btn-sm btn-warning">
                                                 <i class="bi bi-cart-plus"></i>
@@ -264,59 +208,56 @@
 
     <!-- Modal de Compra -->
     <div class="modal fade" id="purchaseModal" tabindex="-1">
-        <div class="modal-dialog modal-md">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-warning text-dark">
                     <h5 class="modal-title">
-                        <i class="bi bi-cart-check"></i> Confirmar Compra
+                        <i class="bi bi-cart-check"></i> Solicitar compra
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-file-earmark-text display-4 text-brown mb-3"></i>
-                        <h5 id="documentTitle" class="fw-bold"></h5>
-                        <p class="text-muted">¿Estás seguro de que deseas adquirir este documento?</p>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="card border-0 bg-light">
-                                <div class="card-body text-center">
-                                    <h6 class="text-muted">Precio</h6>
-                                    <h4 id="documentPrice" class="fw-bold text-brown"></h4>
+                    @if($paymentSetting)
+                        <div class="row g-3">
+                            <div class="col-md-6 text-center">
+                                <div class="border rounded p-3 bg-light h-100">
+                                    <h6 class="fw-semibold mb-2">Imagen / QR</h6>
+                                    @if($paymentSetting->qr_image_path)
+                                        <img src="{{ asset('storage/'.$paymentSetting->qr_image_path) }}" alt="QR" class="img-fluid" style="max-height:240px;">
+                                    @else
+                                        <p class="text-muted mb-0">Sin imagen configurada.</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 bg-light h-100">
+                                    <h6 class="fw-semibold">Datos de pago</h6>
+                                    <p class="mb-1"><strong>Número de cuenta:</strong> <span id="modalAccount">{{ $paymentSetting->account_number ?: 'No definido' }}</span></p>
+                                    <p class="mb-1"><strong>Llave:</strong> <span id="modalKey">{{ $paymentSetting->payment_key ?: 'No definida' }}</span></p>
+                                    <p class="small text-muted mt-3">Después de pagar, pulsa "Ya realicé el pago". Un administrador revisará tu solicitud.</p>
+                                    <div class="mt-3">
+                                        <h6 class="fw-semibold mb-1" id="documentTitle"></h6>
+                                        <div class="text-brown fw-bold" id="documentPrice"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="card border-0 bg-light">
-                                <div class="card-body text-center">
-                                    <h6 class="text-muted">Formato</h6>
-                                    <h6 class="fw-bold text-brown">PDF</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h6>Beneficios:</h6>
-                        <ul class="list-unstyled small">
-                            <li><i class="bi bi-check-circle text-success me-2"></i> Descarga ilimitada</li>
-                            <li><i class="bi bi-check-circle text-success me-2"></i> Acceso permanente</li>
-                            <li><i class="bi bi-check-circle text-success me-2"></i> Soporte técnico</li>
-                        </ul>
-                    </div>
+                    @else
+                        <div class="alert alert-warning mb-0">El administrador aún no configuró los datos de pago.</div>
+                    @endif
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
+                    @if($paymentSetting)
                     <form id="purchaseForm" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-warning">
-                            <i class="bi bi-credit-card"></i> Confirmar Compra
+                        <button type="submit" class="btn btn-brown">
+                            <i class="bi bi-check-circle"></i> Ya realicé el pago
                         </button>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>
@@ -334,19 +275,19 @@
                     const documentTitle = button.getAttribute('data-document-title');
                     const documentPrice = button.getAttribute('data-document-price');
 
-                    // Actualizar modal con la información del documento
-                    document.getElementById('documentTitle').textContent = documentTitle;
-                    document.getElementById('documentPrice').textContent = '$' + parseFloat(documentPrice)
-                        .toFixed(2);
+                    const titleEl = document.getElementById('documentTitle');
+                    const priceEl = document.getElementById('documentPrice');
+                    if (titleEl) titleEl.textContent = documentTitle;
+                    if (priceEl) priceEl.textContent = '$' + parseFloat(documentPrice).toFixed(2);
 
-                    // Actualizar formulario con la ruta correcta
                     const form = document.getElementById('purchaseForm');
-                    form.action = `/documents/${documentId}/purchase`;
+                    if (form) {
+                        form.action = `/documents/${documentId}/purchase-request`;
+                    }
                 });
             }
 
-            // Mostrar mensajes de éxito/error
-            @if (session('success') || session('error'))
+            @if (session('success') || session('error') || session('info'))
                 setTimeout(() => {
                     const alerts = document.querySelectorAll('.alert');
                     alerts.forEach(alert => {
