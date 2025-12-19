@@ -39,9 +39,6 @@
                 <li><a href="{{ route('repository.gallery') }}">Observatorio</a></li>
             </ul>
             <div class="acciones">
-                <a href="https://www.facebook.com/hover.suarezpuentes" target="_blank" title="Facebook">
-                    <img src="{{ asset('img/logos/facebook.png') }}" alt="Facebook">
-                </a>
                 @guest
                     <a href="{{ route('login') }}" title="Iniciar sesión">
                         <img src="{{ asset('img/logos/usuario.png') }}" alt="Login">

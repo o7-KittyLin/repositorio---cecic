@@ -25,15 +25,17 @@
                         <div class="d-flex gap-2">
                             @auth
                                 @if (!$document->is_free && !$isPurchased)
-                                    <form action="{{ route('documents.purchase', $document->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-warning btn-sm">
+                                    @if($pendingRequest && $pendingRequest->status === 'pending')
+                                        <span class="badge bg-warning text-dark align-self-center">Solicitud pendiente</span>
+                                    @elseif($pendingRequest && $pendingRequest->status === 'rejected')
+                                        <span class="badge bg-danger align-self-center">Solicitud rechazada</span>
+                                    @else
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#purchaseModal">
                                             <i class="bi bi-cart-plus"></i> Comprar - ${{ number_format($document->price, 2) }}
                                         </button>
-                                    </form>
+                                    @endif
                                 @endif
                             @endauth
-                            @endif
 
                             @if ($canViewFull)
                                 <a href="{{ route('documents.download', $document->id) }}" class="btn btn-success btn-sm">
@@ -242,6 +244,14 @@
                             @endif
                         </div>
 
+                        @if(!$document->is_free && !$isPurchased)
+                            @if($pendingRequest && $pendingRequest->status === 'pending')
+                                <div class="alert alert-warning py-2">Solicitud de compra pendiente de revision.</div>
+                            @elseif($pendingRequest && $pendingRequest->status === 'rejected')
+                                <div class="alert alert-danger py-2">Solicitud rechazada.</div>
+                            @endif
+                        @endif
+
                         <div class="mb-3">
                             <strong>Subido:</strong>
                             <div class="text-muted">{{ $document->created_at->format('d/m/Y') }}</div>
@@ -308,3 +318,56 @@
         });
     </script>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const purchaseModal = document.getElementById('purchaseModal');
+    if (purchaseModal) {
+        purchaseModal.addEventListener('shown.bs.modal', function () {
+            const firstInput = purchaseModal.querySelector('button[data-submit="purchase-request"]');
+            if (firstInput) firstInput.focus();
+        });
+    }
+});
+</script>
+@endpush
+
+<!-- Modal compra simulada -->
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-brown text-white">
+        <h5 class="modal-title"><i class="bi bi-cart-plus"></i> Comprar documento</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        @if($paymentSetting)
+            <p class="mb-2"><strong>Numero de cuenta:</strong> {{ $paymentSetting->account_number }}</p>
+            @if($paymentSetting->key)
+                <p class="mb-2"><strong>Llave:</strong> {{ $paymentSetting->key }}</p>
+            @endif
+            @if($paymentSetting->qr_path)
+                <div class="mb-3">
+                    <img src="{{ asset('storage/'.$paymentSetting->qr_path) }}" class="img-fluid rounded border" alt="QR">
+                </div>
+            @endif
+        @else
+            <div class="alert alert-info">Aun no hay configuracion de pago. Contacta al administrador.</div>
+        @endif
+        <p class="small text-muted mb-1">Selecciona “Ya realice el pago” para enviar la solicitud al administrador.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        @if($paymentSetting)
+        <form action="{{ route('documents.purchase-request', $document->id) }}" method="POST" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-brown" data-submit="purchase-request">
+                Ya realice el pago
+            </button>
+        </form>
+        @endif
+      </div>
+    </div>
+  </div>
+</div>
