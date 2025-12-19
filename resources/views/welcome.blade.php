@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Pangolin&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/cecic.css') }}">
-    <link rel="shortcut icon" href="{{ asset('logos/logo3.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('img/logos/Logo.png') }}" type="image/x-icon">
 </head>
 <body>
 <main>

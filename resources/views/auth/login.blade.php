@@ -12,6 +12,9 @@
 
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Pangolin&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/cecic.css') }}">
+    <link rel="shortcut icon" href="{{ asset('img/logos/Logo.png') }}" type="image/x-icon">
+
 
     <style>
         :root {
@@ -26,86 +29,6 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--cecic-bg);
             margin: 0;
-        }
-
-        /* ===== NAVBAR (MISMO QUE LA PRINCIPAL) ===== */
-        .nav {
-          background: linear-gradient(90deg, var(--cecic-brown), var(--cecic-brown-dark));
-          padding: 12px 0;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-          width: 100%;
-          position: sticky;
-          top: 0;
-          z-index: 100;
-        }
-
-        .nav nav {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-          flex-wrap: wrap;
-          gap: 12px;
-        }
-
-        .nav .logo img {
-          width: 120px;
-        }
-
-        .menu {
-          list-style: none;
-          display: flex;
-          gap: 16px;
-          flex-wrap: wrap;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .menu li a {
-          color: #fff;
-          text-decoration: none;
-          font-weight: 600;
-          font-family: 'Pangolin', cursive;
-          font-size: 0.95rem;
-          padding: 6px 10px;
-          border-radius: 999px;
-          transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-        }
-
-        .menu li a:hover {
-          color: var(--cecic-gold-soft);
-          background-color: rgba(255, 248, 225, 0.18);
-          transform: translateY(-1px);
-        }
-
-        .acciones {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .acciones a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            background-color: #D4AF37;
-            border-radius: 50%;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .acciones a img {
-          width: 18px;
-          height: 18px;
-        }
-
-        .acciones a:hover {
-          background-color: var(--cecic-gold-soft);
-          transform: translateY(-1px);
         }
 
         /* ===== LOGIN BOX ===== */
@@ -171,76 +94,6 @@
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
         }
 
-    /* ===== FOOTER ===== */
-        footer.pie.cacao-footer {
-            background-color: #2A1B17;
-            color: #EEE7DB;
-            padding: 28px 20px;
-            font-family: 'Poppins', sans-serif;
-            margin-top: 40px;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* ARRIBA */
-        .footer-top {
-            text-align: center;
-            font-size: 1rem;
-            margin-bottom: 18px;
-            color: #D4AF37;
-            font-weight: 600;
-        }
-
-        .footer-chip {
-            background-color: rgba(212, 175, 55, 0.15);
-            border: 1px solid rgba(212, 175, 55, 0.5);
-            padding: 6px 16px;
-            border-radius: 999px;
-            font-size: 0.88rem;
-            color: #EEE7DB;
-        }
-
-        /* ABAJO (2 columnas + línea vertical) */
-        .footer-bottom {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 30px;
-        }
-
-        /* Izquierda y derecha */
-        .footer-left,
-        .footer-right {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 0.95rem;
-        }
-
-        /* Íconos dorados */
-        .footer-left i,
-        .footer-right i {
-            color: #D4AF37;
-            margin-right: 6px;
-        }
-
-        /* LÍNEA VERTICAL */
-        .footer-divider-vertical {
-            width: 2px;
-            height: 55px;
-            background: linear-gradient(
-                to bottom,
-                transparent,
-                #D4AF37,
-                transparent
-            );
-            border-radius: 3px;
-            margin-top: 5px;
-        }
-
         /* Responsive */
         @media (max-width: 700px) {
             .footer-bottom {
@@ -268,35 +121,32 @@
 <body>
     <div class="page-wrapper">
 
-        {{-- NAV CECIC --}}
+        {{-- NAVBAR --}}
         <section class="nav">
             <nav>
-                {{-- Logo --}}
                 <div class="logo">
-                    <a href="{{ url('/') }}">
-                        <img src="{{ asset('img/logos/logo2.png') }}" alt="Logo CECIC">
+                    <a href="{{ url('/') }}#inicio">
+                        <img src="{{ asset('img/logos/LogoCecic.png') }}" alt="Logo CECIC">
                     </a>
                 </div>
-
-                {{-- Menú principal --}}
                 <ul class="menu">
                     <li><a href="{{ url('/') }}#inicio">Inicio</a></li>
-                    <li><a href="{{ url('/') }}#que-es">¿Qué es el CECIC?</a></li>
-                    <li><a href="{{ url('/') }}#que-encontraras">Contenido</a></li>
-                    <li><a href="{{ url('/') }}#lugares">Lugar</a></li>
-                    <li><a href="{{ url('/') }}#mision-vision">Misión y Visión</a></li>
-                    <li><a href="{{ url('/') }}#valores">Valores</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle-custom">CECIC <span class="flecha">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url('/') }}#que-es">¿Quiénes somos?</a></li>
+                            <li><a href="{{ url('/') }}#mision-vision">Misión y Visión</a></li>
+                            <li><a href="{{ url('/') }}#lugares">Dónde estamos</a></li>
+                            <li><a href="{{ url('/') }}#valores">Valores</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url('/') }}#areas">Áreas</a></li>
+                    <li><a href="{{ route('multimedia.index') }}">Multimedia</a></li>
                     <li><a href="{{ url('/') }}#politicas">Políticas</a></li>
                     <li><a href="{{ url('/') }}#aliados">Aliados</a></li>
                     <li><a href="{{ route('repository.gallery') }}">Observatorio</a></li>
                 </ul>
-
-                {{-- Acciones: redes + login/dashboard --}}
                 <div class="acciones">
-                    <a href="https://www.facebook.com/hover.suarezpuentes" target="_blank" title="Facebook">
-                        <img src="{{ asset('img/logos/facebook.png') }}" alt="Facebook">
-                    </a>
-
                     @guest
                         <a href="{{ route('login') }}" title="Iniciar sesión">
                             <img src="{{ asset('img/logos/usuario.png') }}" alt="Login">
@@ -416,6 +266,8 @@
         </footer>
 
     </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/cecic.js') }}"></script>
 </body>
 
 </html>
