@@ -10,6 +10,7 @@ class Announcement extends Model
     use HasFactory;
 
     protected $fillable = [
+        'created_by',
         'title',
         'description',
         'type',
@@ -23,6 +24,11 @@ class Announcement extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 
     // Scope para anuncios activos
     public function scopeActive($query)

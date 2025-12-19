@@ -16,7 +16,7 @@ class RepositoryController extends Controller
     {
         $categories = Category::all();
 
-        $query = Document::with('category')->where('is_active', true);
+        $query = Document::with(['category', 'user'])->where('is_active', true);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -149,7 +149,7 @@ class RepositoryController extends Controller
 
     public function gallery(Request $request)
     {
-        $query = Document::with('category');
+        $query = Document::with(['category', 'user']);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);

@@ -11,7 +11,7 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $announcements = Announcement::orderBy('start_time', 'desc')->paginate(10);
+        $announcements = Announcement::with('creator')->orderBy('start_time', 'desc')->paginate(10);
         return view('announcements.index', compact('announcements'));
     }
 
@@ -22,37 +22,47 @@ class AnnouncementController extends Controller
 
     public function store(Request $request)
     {
+        // Normalizar espacios en horarios
+        if ($request->type === 'reunion') {
+            $start = trim((string) $request->start_hour);
+            $end = trim((string) $request->end_hour);
+            $request->merge([
+                'start_hour' => $start === '' ? null : $start,
+                'end_hour' => $end === '' ? null : $end,
+            ]);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'type' => 'required|in:reunion,multimedia',
-            'start_date' => 'required_if:type,reunion|date|nullable',
-            'start_hour' => 'required_if:type,reunion|regex:/^\d{1,2}:\d{2}$/|nullable',
-            'start_period' => 'required_if:type,reunion|in:AM,PM|nullable',
-            'end_hour' => 'required_if:type,reunion|regex:/^\d{1,2}:\d{2}$/|nullable',
-            'end_period' => 'required_if:type,reunion|in:AM,PM|nullable',
+            'start_date' => ['nullable','required_if:type,reunion','date'],
+            'start_hour' => ['nullable','required_if:type,reunion','regex:/^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/'],
+            'start_period' => ['nullable','required_if:type,reunion','in:AM,PM'],
+            'end_hour' => ['nullable','required_if:type,reunion','regex:/^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/'],
+            'end_period' => ['nullable','required_if:type,reunion','in:AM,PM'],
             'link' => 'required|url',
             'status' => 'nullable|in:active,inactive,cancelled',
         ], [
-            'title.required' => 'El título es obligatorio.',
-            'title.string' => 'El título debe ser un texto válido.',
-            'title.max' => 'El título no puede superar los 255 caracteres.',
-            'description.string' => 'La descripción debe ser un texto válido.',
+            'title.required' => 'El titulo es obligatorio.',
+            'title.string' => 'El titulo debe ser un texto valido.',
+            'title.max' => 'El titulo no puede superar los 255 caracteres.',
+            'description.string' => 'La descripcion debe ser un texto valido.',
             'type.required' => 'Debes seleccionar el tipo de anuncio.',
-            'type.in' => 'Tipo de anuncio no válido.',
+            'type.in' => 'Tipo de anuncio no valido.',
             'start_date.required_if' => 'La fecha es obligatoria para reuniones.',
-            'start_date.date' => 'La fecha de inicio no es válida.',
+            'start_date.date' => 'La fecha de inicio no es valida.',
             'start_hour.required_if' => 'La hora de inicio es obligatoria para reuniones.',
-            'start_hour.regex' => 'Formato de hora de inicio inválido.',
+            'start_hour.regex' => 'Formato de hora de inicio invalido (HH:MM).',
             'start_period.required_if' => 'El periodo (AM/PM) de inicio es obligatorio.',
-            'start_period.in' => 'Periodo de inicio inválido.',
+            'start_period.in' => 'Periodo de inicio invalido.',
             'end_hour.required_if' => 'La hora de fin es obligatoria para reuniones.',
-            'end_hour.regex' => 'Formato de hora de fin inválido.',
+            'end_hour.regex' => 'Formato de hora de fin invalido (HH:MM).',
             'end_period.required_if' => 'El periodo (AM/PM) de fin es obligatorio.',
-            'end_period.in' => 'Periodo de fin inválido.',
+            'end_period.in' => 'Periodo de fin invalido.',
             'link.required' => 'El enlace es obligatorio.',
-            'link.url' => 'El enlace debe ser una URL válida.',
-            'status.in' => 'El estado seleccionado no es válido.',
+            'link.url' => 'El enlace debe ser una URL valida.',
+            'status.in' => 'El estado seleccionado no es valido.',
         ]);
 
         $to24Hour = function ($hourStr, $period) {
@@ -78,7 +88,7 @@ class AnnouncementController extends Controller
             [$endHour, $endMinute] = $to24Hour($request->end_hour, $request->end_period);
 
             if (!(($startHour >= 8 && $startHour <= 12) || ($startHour >= 13 && $startHour <= 17))) {
-                return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8–12 PM o 1–5 PM'])->withInput();
+                return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8-12 PM o 1-5 PM'])->withInput();
             }
             if (!(($endHour >= 8 && $endHour <= 12) || ($endHour >= 13 && $endHour <= 17))) {
                 return back()->withErrors(['end_hour' => 'La hora de fin debe estar dentro de la franja permitida'])->withInput();
@@ -109,6 +119,7 @@ class AnnouncementController extends Controller
         }
 
         Announcement::create([
+            'created_by' => auth()->id(),
             'title' => $request->title,
             'description' => $request->description,
             'type' => $type,
@@ -146,37 +157,47 @@ class AnnouncementController extends Controller
 
     public function update(Request $request, Announcement $announcement)
     {
+        // Normalizar espacios en horarios
+        if ($request->type === 'reunion') {
+            $start = trim((string) $request->start_hour);
+            $end = trim((string) $request->end_hour);
+            $request->merge([
+                'start_hour' => $start === '' ? null : $start,
+                'end_hour' => $end === '' ? null : $end,
+            ]);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'type' => 'required|in:reunion,multimedia',
-            'start_date' => 'required_if:type,reunion|date|nullable',
-            'start_hour' => 'required_if:type,reunion|regex:/^\d{1,2}:\d{2}$/|nullable',
-            'start_period' => 'required_if:type,reunion|in:AM,PM|nullable',
-            'end_hour' => 'required_if:type,reunion|regex:/^\d{1,2}:\d{2}$/|nullable',
-            'end_period' => 'required_if:type,reunion|in:AM,PM|nullable',
+            'start_date' => ['nullable','required_if:type,reunion','date'],
+            'start_hour' => ['nullable','required_if:type,reunion','regex:/^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/'],
+            'start_period' => ['nullable','required_if:type,reunion','in:AM,PM'],
+            'end_hour' => ['nullable','required_if:type,reunion','regex:/^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/'],
+            'end_period' => ['nullable','required_if:type,reunion','in:AM,PM'],
             'link' => 'required|url',
             'status' => 'nullable|in:active,inactive,cancelled',
         ], [
-            'title.required' => 'El título es obligatorio.',
-            'title.string' => 'El título debe ser un texto válido.',
-            'title.max' => 'El título no puede superar los 255 caracteres.',
-            'description.string' => 'La descripción debe ser un texto válido.',
+            'title.required' => 'El titulo es obligatorio.',
+            'title.string' => 'El titulo debe ser un texto valido.',
+            'title.max' => 'El titulo no puede superar los 255 caracteres.',
+            'description.string' => 'La descripcion debe ser un texto valido.',
             'type.required' => 'Debes seleccionar el tipo de anuncio.',
-            'type.in' => 'Tipo de anuncio no válido.',
+            'type.in' => 'Tipo de anuncio no valido.',
             'start_date.required_if' => 'La fecha es obligatoria para reuniones.',
-            'start_date.date' => 'La fecha de inicio no es válida.',
+            'start_date.date' => 'La fecha de inicio no es valida.',
             'start_hour.required_if' => 'La hora de inicio es obligatoria para reuniones.',
-            'start_hour.regex' => 'Formato de hora de inicio inválido.',
+            'start_hour.regex' => 'Formato de hora de inicio invalido (HH:MM).',
             'start_period.required_if' => 'El periodo (AM/PM) de inicio es obligatorio.',
-            'start_period.in' => 'Periodo de inicio inválido.',
+            'start_period.in' => 'Periodo de inicio invalido.',
             'end_hour.required_if' => 'La hora de fin es obligatoria para reuniones.',
-            'end_hour.regex' => 'Formato de hora de fin inválido.',
+            'end_hour.regex' => 'Formato de hora de fin invalido (HH:MM).',
             'end_period.required_if' => 'El periodo (AM/PM) de fin es obligatorio.',
-            'end_period.in' => 'Periodo de fin inválido.',
+            'end_period.in' => 'Periodo de fin invalido.',
             'link.required' => 'El enlace es obligatorio.',
-            'link.url' => 'El enlace debe ser una URL válida.',
-            'status.in' => 'El estado seleccionado no es válido.',
+            'link.url' => 'El enlace debe ser una URL valida.',
+            'status.in' => 'El estado seleccionado no es valido.',
         ]);
 
         $to24Hour = function ($hourStr, $period) {
@@ -201,7 +222,7 @@ class AnnouncementController extends Controller
             [$endHour, $endMinute] = $to24Hour($request->end_hour, $request->end_period);
 
             if (!(($startHour >= 8 && $startHour <= 12) || ($startHour >= 13 && $startHour <= 17))) {
-                return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8–12 PM o 1–5 PM'])->withInput();
+                return back()->withErrors(['start_hour' => 'La hora de inicio debe ser entre 8-12 PM o 1-5 PM'])->withInput();
             }
             if (!(($endHour >= 8 && $endHour <= 12) || ($endHour >= 13 && $endHour <= 17))) {
                 return back()->withErrors(['end_hour' => 'La hora de fin debe estar dentro de la franja permitida'])->withInput();

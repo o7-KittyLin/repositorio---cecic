@@ -143,13 +143,16 @@
             </a>
         </li>
 
-        {{-- Admin --}}
+        {{-- Admin / Empleado --}}
         @hasrole('Administrador')
             <li>
                 <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                    <i class="bi bi-people"></i> Usuarios
+                    <i class="bi bi-people"></i> Empleados
                 </a>
             </li>
+        @endhasrole
+
+        @hasanyrole('Administrador|Empleado')
             <li>
                 <a href="{{ route('sales.index') }}" class="nav-link {{ request()->routeIs('sales.*') || request()->routeIs('sales.byDocument') ? 'active' : '' }}">
                     <i class="bi bi-cash-coin"></i> Ventas
@@ -160,7 +163,7 @@
                     <i class="bi bi-megaphone"></i> Anuncios
                 </a>
             </li>
-        @endhasrole
+        @endhasanyrole
 
         {{-- Usuario --}}
         @hasrole('Usuario')
@@ -172,6 +175,11 @@
             <li>
                 <a href="{{ route('favorites.my') }}" class="nav-link {{ request()->routeIs('favorites.my') ? 'active' : '' }}">
                     <i class="bi bi-heart"></i> Favoritos
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('users.edit', Auth::id()) }}" class="nav-link">
+                    <i class="bi bi-person-circle"></i> Perfil
                 </a>
             </li>
         @endhasrole

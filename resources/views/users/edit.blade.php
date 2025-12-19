@@ -3,10 +3,15 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold text-brown mb-0"><i class="bi bi-person-lines-fill"></i> Editar usuario</h3>
-        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left"></i> Volver
-        </a>
+        <h3 class="fw-bold text-brown mb-0">
+            <i class="bi bi-person-lines-fill"></i>
+            {{ $isAdmin ? 'Editar usuario' : 'Mi perfil' }}
+        </h3>
+        @if($isAdmin)
+            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        @endif
     </div>
 
     @if(session('success'))
@@ -37,15 +42,17 @@
                     @error('password') <div class="text-danger small">{{ $message }}</div> @enderror
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Rol*</label>
-                    <select name="role" class="form-select">
-                        @foreach($roles as $r)
-                            <option value="{{ $r->name }}" {{ $user->roles->contains('name', $r->name) ? 'selected' : '' }}>{{ $r->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('role') <div class="text-danger small">{{ $message }}</div> @enderror
-                </div>
+                @if($isAdmin)
+                    <div class="col-md-6">
+                        <label class="form-label">Rol*</label>
+                        <select name="role" class="form-select">
+                            @foreach($roles as $r)
+                                <option value="{{ $r->name }}" {{ $user->roles->contains('name', $r->name) ? 'selected' : '' }}>{{ $r->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('role') <div class="text-danger small">{{ $message }}</div> @enderror
+                    </div>
+                @endif
             </div>
 
             <div class="text-end mt-4">

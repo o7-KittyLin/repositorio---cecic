@@ -4,9 +4,9 @@
 <div class="container">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold text-brown"><i class="bi bi-people"></i> Usuarios</h3>
+        <h3 class="fw-bold text-brown"><i class="bi bi-people"></i> Empleados / Admins</h3>
         <a href="{{ route('users.create') }}" class="btn btn-brown btn-sm">
-            <i class="bi bi-person-plus"></i> Nuevo usuario
+            <i class="bi bi-person-plus"></i> Nuevo empleado/admin
         </a>
     </div>
 
@@ -45,7 +45,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">No hay usuarios.</td>
+                        <td colspan="4" class="text-center text-muted py-4">No hay registros.</td>
                     </tr>
                     @endforelse
                 </tbody>

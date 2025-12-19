@@ -58,8 +58,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     ->middleware('auth'); // obliga a iniciar sesión
 
 
-    // Anuncios
-    Route::resource('announcements', AnnouncementController::class);
+    // Anuncios (solo admin/empleado)
+    Route::middleware('role:Administrador|Empleado')->group(function () {
+        Route::resource('announcements', AnnouncementController::class);
+    });
 
     // Interacciones con documentos
     Route::post('documents/{document}/like', [DocumentInteractionController::class, 'like'])
@@ -92,16 +94,19 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
     Route::resource('users', UserController::class);
 
-    Route::get('/ventas', [PurchaseController::class, 'sales'])
-        ->name('sales.index');
+    // Ventas (solo admin/empleado)
+    Route::middleware('role:Administrador|Empleado')->group(function () {
+        Route::get('/ventas', [PurchaseController::class, 'sales'])
+            ->name('sales.index');
 
-    // Ventas agrupadas
-    Route::get('/sales/documents', [PurchaseController::class, 'salesByDocument'])
-        ->name('sales.byDocument');
+        // Ventas agrupadas
+        Route::get('/sales/documents', [PurchaseController::class, 'salesByDocument'])
+            ->name('sales.byDocument');
 
-    // Ventas por documento
-    Route::get('/sales/document/{document}', [PurchaseController::class, 'salesDocumentDetail'])
-        ->name('sales.documentDetail');
+        // Ventas por documento
+        Route::get('/sales/document/{document}', [PurchaseController::class, 'salesDocumentDetail'])
+            ->name('sales.documentDetail');
+    });
 
     // Eliminar categorias
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])

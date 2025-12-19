@@ -56,14 +56,14 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center gap-3">
                 <h2 class="fw-bold text-brown mb-0">
-                    <i class="bi bi-collection"></i> Galería del Repositorio
+                    <i class="bi bi-collection"></i> Galeria del Repositorio
                 </h2>
             </div>
 
             <div class="d-flex gap-2 align-items-center">
                 <form action="{{ route('repository.gallery') }}" method="GET" class="d-flex gap-2 align-items-center">
                     <select name="category_id" class="form-select" onchange="this.form.submit()" style="min-width: 200px;">
-                        <option value="">Todas las categorías</option>
+                        <option value="">Todas las categorias</option>
                         @foreach ($categories as $cat)
                             <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
                                 {{ $cat->name }}
@@ -136,8 +136,11 @@
                                 </div>
 
                                 @if($doc->category)
-                                    <small class="text-muted d-block mb-2">{{ $doc->category->name }}</small>
+                                    <small class="text-muted d-block mb-1">{{ $doc->category->name }}</small>
                                 @endif
+                                @hasanyrole('Administrador|Empleado')
+                                    <small class="text-muted d-block mb-2">Creado por: {{ $doc->user->name ?? 'N/D' }}</small>
+                                @endhasanyrole
 
                                 <p class="card-text text-secondary flex-grow-1 mb-3">
                                     {{ Str::limit($doc->description, 100) }}
@@ -189,13 +192,12 @@
         </div>
 
 
-        <!-- Paginación -->
+        <!-- Paginacion -->
         <div class="d-flex justify-content-end mt-4">
             {{ $documents->links() }}
         </div>
     </div>
 
-    {{-- Bootstrap bundle ya incluido en el layout --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             @if (session('success') || session('error') || session('info'))
