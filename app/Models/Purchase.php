@@ -12,7 +12,6 @@ class Purchase extends Model
     protected $fillable = [
         'user_id',
         'document_id',
-        'purchase_request_id',
         'payment_status',
         'amount',
         'transaction_id'
@@ -30,11 +29,6 @@ class Purchase extends Model
     public function document()
     {
         return $this->belongsTo(Document::class);
-    }
-
-    public function purchaseRequest()
-    {
-        return $this->belongsTo(PurchaseRequest::class);
     }
 
     public function scopeCompleted($query)

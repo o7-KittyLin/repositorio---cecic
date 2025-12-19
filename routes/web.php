@@ -8,8 +8,6 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentInteractionController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PaymentSettingController;
-use App\Http\Controllers\PurchaseRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -63,10 +61,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // Anuncios
     Route::resource('announcements', AnnouncementController::class);
 
-    // Solicitudes de compra manual (usuario)
-    Route::post('documents/{document}/purchase-request', [PurchaseRequestController::class, 'store'])
-        ->name('purchase-requests.store');
-
     // Interacciones con documentos
     Route::post('documents/{document}/like', [DocumentInteractionController::class, 'like'])
         ->name('documents.like');
@@ -91,12 +85,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         ->name('favorites.my');
 
     Route::middleware(['role:Administrador'])->group(function () {
-        Route::get('payment-settings', [PaymentSettingController::class, 'edit'])->name('payment-settings.edit');
-        Route::put('payment-settings', [PaymentSettingController::class, 'update'])->name('payment-settings.update');
-
-        Route::get('purchase-requests', [PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
-        Route::patch('purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve'])->name('purchase-requests.approve');
-        Route::patch('purchase-requests/{purchaseRequest}/reject', [PurchaseRequestController::class, 'reject'])->name('purchase-requests.reject');
     });
 
 

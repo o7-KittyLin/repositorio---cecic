@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
-use App\Models\PaymentSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -123,8 +122,6 @@ class DocumentController extends Controller
         $document->load(['user', 'category', 'comments.user', 'likes']);
 
         $isPurchased = auth()->check() ? $document->isPurchasedBy(auth()->user()) : false;
-        $pendingRequest = auth()->check() ? $document->hasPendingRequest(auth()->user()) : false;
-        $paymentSetting = PaymentSetting::first();
 
         $canViewFull =
             $document->is_free ||
@@ -139,10 +136,8 @@ class DocumentController extends Controller
         return view('documents.show', compact(
             'document',
             'isPurchased',
-            'pendingRequest',
             'canViewFull',
-            'relatedDocuments',
-            'paymentSetting'
+            'relatedDocuments'
         ));
     }
 

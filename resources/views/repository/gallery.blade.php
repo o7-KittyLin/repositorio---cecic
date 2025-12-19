@@ -103,7 +103,6 @@
             @forelse($documents as $doc)
                 @php
                     $isPurchased = auth()->check() ? $doc->isPurchasedBy(auth()->user()) : false;
-                    $pendingRequest = auth()->check() ? $doc->hasPendingRequest(auth()->user()) : null;
                     $canDownload = $doc->is_free || $isPurchased || (auth()->check() && auth()->user()->hasRole('Administrador'));
                 @endphp
 
@@ -155,19 +154,9 @@
                                                 <i class="bi bi-download"></i>
                                             </a>
                                         @elseif(!$doc->is_free && auth()->check())
-                                            @if($pendingRequest)
-                                                <button class="btn btn-sm btn-outline-secondary me-2" disabled>
-                                                    <i class="bi bi-hourglass-split"></i>
-                                                </button>
-                                            @else
-                                                <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
-                                                        data-bs-target="#purchaseModal"
-                                                        data-document-id="{{ $doc->id }}"
-                                                        data-document-title="{{ $doc->title }}"
-                                                        data-document-price="{{ $doc->price }}">
-                                                    <i class="bi bi-cart-plus"></i>
-                                                </button>
-                                            @endif
+                                            <a href="{{ route('documents.purchase', $doc->id) }}" class="btn btn-sm btn-warning me-2">
+                                                <i class="bi bi-cart-plus"></i>
+                                            </a>
                                         @elseif(!$doc->is_free && !auth()->check())
                                             <a href="{{ route('login') }}?redirect=purchase&doc={{ $doc->id }}" class="btn btn-sm btn-warning">
                                                 <i class="bi bi-cart-plus"></i>
@@ -206,87 +195,9 @@
         </div>
     </div>
 
-    <!-- Modal de Compra -->
-    <div class="modal fade" id="purchaseModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title">
-                        <i class="bi bi-cart-check"></i> Solicitar compra
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    @if($paymentSetting)
-                        <div class="row g-3">
-                            <div class="col-md-6 text-center">
-                                <div class="border rounded p-3 bg-light h-100">
-                                    <h6 class="fw-semibold mb-2">Imagen / QR</h6>
-                                    @if($paymentSetting->qr_image_path)
-                                        <img src="{{ asset('storage/'.$paymentSetting->qr_image_path) }}" alt="QR" class="img-fluid" style="max-height:240px;">
-                                    @else
-                                        <p class="text-muted mb-0">Sin imagen configurada.</p>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="border rounded p-3 bg-light h-100">
-                                    <h6 class="fw-semibold">Datos de pago</h6>
-                                    <p class="mb-1"><strong>Número de cuenta:</strong> <span id="modalAccount">{{ $paymentSetting->account_number ?: 'No definido' }}</span></p>
-                                    <p class="mb-1"><strong>Llave:</strong> <span id="modalKey">{{ $paymentSetting->payment_key ?: 'No definida' }}</span></p>
-                                    <p class="small text-muted mt-3">Después de pagar, pulsa "Ya realicé el pago". Un administrador revisará tu solicitud.</p>
-                                    <div class="mt-3">
-                                        <h6 class="fw-semibold mb-1" id="documentTitle"></h6>
-                                        <div class="text-brown fw-bold" id="documentPrice"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <div class="alert alert-warning mb-0">El administrador aún no configuró los datos de pago.</div>
-                    @endif
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </button>
-                    @if($paymentSetting)
-                    <form id="purchaseForm" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-brown">
-                            <i class="bi bi-check-circle"></i> Ya realicé el pago
-                        </button>
-                    </form>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{-- Bootstrap bundle ya incluido en el layout --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const purchaseModal = document.getElementById('purchaseModal');
-
-            if (purchaseModal) {
-                purchaseModal.addEventListener('show.bs.modal', function(event) {
-                    const button = event.relatedTarget;
-                    const documentId = button.getAttribute('data-document-id');
-                    const documentTitle = button.getAttribute('data-document-title');
-                    const documentPrice = button.getAttribute('data-document-price');
-
-                    const titleEl = document.getElementById('documentTitle');
-                    const priceEl = document.getElementById('documentPrice');
-                    if (titleEl) titleEl.textContent = documentTitle;
-                    if (priceEl) priceEl.textContent = '$' + parseFloat(documentPrice).toFixed(2);
-
-                    const form = document.getElementById('purchaseForm');
-                    if (form) {
-                        form.action = `/documents/${documentId}/purchase-request`;
-                    }
-                });
-            }
-
             @if (session('success') || session('error') || session('info'))
                 setTimeout(() => {
                     const alerts = document.querySelectorAll('.alert');
