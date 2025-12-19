@@ -32,8 +32,8 @@ Route::get('/multimedia', function () {
 })->name('multimedia.index');
 
 // Descargar documento (solo si gratis o comprado)
-    Route::get('documents/download/{document}', [DocumentController::class, 'download'])
-        ->name('documents.download');
+Route::get('documents/download/{document}', [DocumentController::class, 'download'])
+    ->name('documents.download');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::get('/dashboard', function () {
@@ -80,23 +80,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         ->name('documents.purchase');
     Route::get('my-purchases', [PurchaseController::class, 'myPurchases'])
         ->name('purchases.my');
-
-    Route::get('my-favorites', [FavoriteController::class, 'myFavorites'])
-        ->name('favorites.my');
-
-    Route::middleware(['role:Administrador'])->group(function () {
-    });
-
-
-    // Vista de documento individual
-//    Route::get('documents/{document}/show', [DocumentController::class, 'show'])
-//        ->name('documents.show');
-
-    Route::get('my-purchases', [PurchaseController::class, 'myPurchases'])
-        ->name('purchases.my');
-
     Route::get('purchases/success/{purchase}', [PurchaseController::class, 'success'])
         ->name('purchases.success');
+    Route::get('/documents/{document}/confirm-purchase', [PurchaseController::class, 'confirmPurchase'])
+        ->middleware('signed')
+        ->name('documents.confirm-purchase');
+
+    // Favoritos
+    Route::get('my-favorites', [FavoriteController::class, 'myFavorites'])
+        ->name('favorites.my');
 
     Route::resource('users', UserController::class);
 
@@ -114,15 +106,5 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // Eliminar categorias
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])
         ->name('categories.destroy');
-
-    // verificar compra
-    Route::middleware(['auth'])->group(function () {
-        Route::post('/documents/{document}/purchase', [PurchaseController::class, 'purchase'])
-            ->name('documents.purchase');
-
-        Route::get('/documents/{document}/confirm-purchase', [PurchaseController::class, 'confirmPurchase'])
-            ->middleware('signed')
-            ->name('documents.confirm-purchase');
-    });
 
 });

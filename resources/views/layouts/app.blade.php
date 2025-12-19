@@ -160,11 +160,6 @@
                     <i class="bi bi-megaphone"></i> Anuncios
                 </a>
             </li>
-            <li>
-
-                    <i class="bi bi-gear"></i> Config. pagos
-                </a>
-            </li>
         @endhasrole
 
         {{-- Usuario --}}
