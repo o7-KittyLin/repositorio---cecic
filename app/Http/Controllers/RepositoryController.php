@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\Category;
+use App\Models\PaymentSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -157,8 +158,9 @@ class RepositoryController extends Controller
 
         $documents = $query->latest()->paginate(12);
         $categories = Category::all();
+        $paymentSetting = PaymentSetting::latest()->first();
 
-        return view('repository.gallery', compact('documents', 'categories'));
+        return view('repository.gallery', compact('documents', 'categories','paymentSetting'));
     }
 
 

@@ -337,9 +337,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-brown text-white">
+      <div class="modal-header bg-warning text-dark">
         <h5 class="modal-title"><i class="bi bi-cart-plus"></i> Comprar documento</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         @if($paymentSetting)
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         @if($paymentSetting)
         <form action="{{ route('documents.purchase-request', $document->id) }}" method="POST" class="d-inline">
             @csrf
-            <button type="submit" class="btn btn-brown" data-submit="purchase-request">
+            <button type="submit" class="btn btn-warning text-dark" data-submit="purchase-request">
                 Ya realice el pago
             </button>
         </form>
