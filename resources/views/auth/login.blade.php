@@ -190,26 +190,26 @@
                 @endif
 
                 <!-- FORMULARIO -->
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login') }}" novalidate>
                     @csrf
 
                     <div class="mb-3">
                         <label for="email" class="form-label fw-semibold">Correo Electrónico</label>
                         <input id="email" type="email" name="email"
                                value="{{ old('email') }}"
-                               class="form-control" placeholder="ejemplo@correo.com"
+                               class="form-control @error('email') is-invalid @enderror" placeholder="ejemplo@correo.com"
                                autofocus>
                         @error('email')
-                            <span class="text-danger small">{{ $message }}</span>
+                            <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label fw-semibold">Contraseña</label>
                         <input id="password" type="password" name="password"
-                               class="form-control">
+                               class="form-control @error('password') is-invalid @enderror">
                         @error('password')
-                            <span class="text-danger small">{{ $message }}</span>
+                            <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                     </div>
 

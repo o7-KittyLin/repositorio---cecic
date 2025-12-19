@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AccountDeletionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentInteractionController;
@@ -100,6 +101,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         ->name('favorites.my');
 
     Route::resource('users', UserController::class);
+
+    // Eliminación / recuperación de cuenta (programada)
+    Route::post('/account-deletion/request', [AccountDeletionController::class, 'requestDeletion'])
+        ->name('account-deletion.request');
+    Route::post('/account-deletion/recover', [AccountDeletionController::class, 'recover'])
+        ->name('account-deletion.recover');
 
     // Ventas (solo admin/empleado)
     Route::middleware('role:Administrador|Empleado')->group(function () {

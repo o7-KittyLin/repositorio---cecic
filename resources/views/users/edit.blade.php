@@ -60,5 +60,37 @@
             </div>
         </form>
     </div>
+
+    @if(!$isAdmin)
+    <div class="card p-4 shadow-sm mt-4">
+        <h5 class="fw-bold text-danger mb-2"><i class="bi bi-exclamation-triangle"></i> Eliminar cuenta</h5>
+        @if($pendingDeletion)
+            <p class="mb-3 text-muted">
+                Eliminación programada para <strong>{{ $pendingDeletion->scheduled_for->format('d/m/Y') }}</strong>. Puedes recuperarla antes de esa fecha.
+            </p>
+            <form method="POST" action="{{ route('account-deletion.recover') }}">
+                @csrf
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-arrow-counterclockwise"></i> Recuperar cuenta
+                </button>
+            </form>
+        @else
+            <p class="mb-3 text-muted">Tu cuenta se eliminará en 3 días hábiles tras la solicitud. Ingresa tu contraseña para confirmar.</p>
+            <form method="POST" action="{{ route('account-deletion.request') }}" class="row g-2 align-items-end">
+                @csrf
+                <div class="col-md-6">
+                    <label class="form-label">Contraseña actual</label>
+                    <input type="password" name="password" class="form-control" required>
+                    @error('password') <div class="text-danger small">{{ $message }}</div> @enderror
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-danger mt-2 mt-md-0">
+                        <i class="bi bi-trash"></i> Solicitar eliminación
+                    </button>
+                </div>
+            </form>
+        @endif
+    </div>
+    @endif
 </div>
 @endsection

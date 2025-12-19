@@ -198,11 +198,6 @@
                             <span class="label"><i class="bi bi-collection"></i> Observatorio</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ route('repository.index') }}" class="nav-link {{ request()->routeIs('repository.index') ? 'active' : '' }}">
-                            <span class="label"><i class="bi bi-archive"></i> Repositorio</span>
-                        </a>
-                    </li>
                 </ul>
             </li>
         @else
@@ -220,7 +215,7 @@
         @endhasanyrole
 
         {{-- Bloque Gestion --}}
-        @hasanyrole('Administrador')
+        @hasanyrole('Administrador|Empleado')
         <li class="sidebar-group">
             <button class="group-toggle" data-group="gestion">
                 <span class="label"><i class="bi bi-people"></i> Gestion</span>
@@ -228,10 +223,17 @@
             </button>
             <ul class="group-list" data-group-list="gestion">
                 <li>
+                    <a href="{{ route('repository.index') }}" class="nav-link {{ request()->routeIs('repository.index') ? 'active' : '' }}">
+                        <span class="label"><i class="bi bi-archive"></i> Repositorio</span>
+                    </a>
+                </li>
+                @hasrole('Administrador')
+                <li>
                     <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <span class="label"><i class="bi bi-people"></i> Usuarios</span>
                     </a>
                 </li>
+                @endhasrole
             </ul>
         </li>
         @endhasrole

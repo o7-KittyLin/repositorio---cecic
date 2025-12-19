@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\AccountDeletion;
 use App\Services\DoubleHash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,7 +91,8 @@ class UserController extends Controller
             ->get()
             ->unique('name')
             ->values();
-        return view('users.edit', compact('user', 'roles', 'isAdmin'));
+        $pendingDeletion = AccountDeletion::pendingFor($user);
+        return view('users.edit', compact('user', 'roles', 'isAdmin', 'pendingDeletion'));
     }
 
     public function update(Request $request, User $user)

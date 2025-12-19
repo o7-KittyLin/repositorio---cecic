@@ -6,11 +6,13 @@ use App\Models\Document;
 use App\Models\PaymentSetting;
 use App\Models\Purchase;
 use App\Models\PurchaseRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PurchaseApprovedMail;
 use App\Mail\PurchaseRejectedMail;
+use App\Mail\PurchaseRequestCreatedMail;
 
 class PurchaseRequestController extends Controller
 {
@@ -35,13 +37,19 @@ class PurchaseRequestController extends Controller
             return back()->with('info', 'Ya tienes una solicitud pendiente para este documento.');
         }
 
-        PurchaseRequest::create([
+        $purchaseRequest = PurchaseRequest::create([
             'user_id' => $user->id,
             'document_id' => $document->id,
             'status' => 'pending',
         ]);
 
-        return back()->with('success', 'Solicitud enviada. El administrador revisara tu compra.');
+        // Notificar a administradores
+        $admins = User::role('Administrador')->pluck('email')->filter()->unique();
+        if ($admins->isNotEmpty()) {
+            Mail::to($admins)->send(new PurchaseRequestCreatedMail($purchaseRequest));
+        }
+
+        return back()->with('success', 'Solicitud enviada. El administrador revisará tu compra.');
     }
 
     public function index()

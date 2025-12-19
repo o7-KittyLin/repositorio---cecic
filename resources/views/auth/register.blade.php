@@ -122,25 +122,25 @@
     <section class="nav">
         <nav>
             <div class="logo">
-                <a href="#inicio">
+                <a href="{{ url('/') }}##inicio">
                     <img src="{{ asset('img/logos/LogoCecic.png') }}" alt="Logo CECIC">
                 </a>
             </div>
             <ul class="menu">
-                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="{{ url('/') }}##inicio">Inicio</a></li>
                 <li class="dropdown">
                     <a href="javascript:void(0)" class="dropdown-toggle-custom">CECIC <span class="flecha">▼</span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#que-es">¿Quiénes somos?</a></li>
-                        <li><a href="#mision-vision">Misión y Visión</a></li>
-                        <li><a href="#lugares">Dónde estamos</a></li>
-                        <li><a href="#valores">Valores</a></li>
+                        <li><a href="{{ url('/') }}##que-es">¿Quiénes somos?</a></li>
+                        <li><a href="{{ url('/') }}##mision-vision">Misión y Visión</a></li>
+                        <li><a href="{{ url('/') }}##lugares">Dónde estamos</a></li>
+                        <li><a href="{{ url('/') }}##valores">Valores</a></li>
                     </ul>
                 </li>
-                <li><a href="#areas">Áreas</a></li>
+                <li><a href="{{ url('/') }}##areas">Áreas</a></li>
                 <li><a href="{{ route('multimedia.index') }}">Multimedia</a></li>
-                <li><a href="#politicas">Políticas</a></li>
-                <li><a href="#aliados">Aliados</a></li>
+                <li><a href="{{ url('/') }}##politicas">Políticas</a></li>
+                <li><a href="{{ url('/') }}##aliados">Aliados</a></li>
                 <li><a href="{{ route('repository.gallery') }}">Observatorio</a></li>
             </ul>
             <div class="acciones">
@@ -181,34 +181,46 @@
             @endif
 
             <!-- FORMULARIO -->
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" novalidate>
                 @csrf
 
                 <div class="mb-3">
                     <label for="name" class="form-label fw-semibold">Nombre Completo</label>
                     <input id="name" type="text" name="name"
-                           class="form-control"
+                           class="form-control @error('name') is-invalid @enderror"
                            value="{{ old('name') }}" autofocus>
+                    @error('name')
+                        <div class="text-danger small mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label fw-semibold">Correo Electrónico</label>
                     <input id="email" type="email" name="email"
-                           class="form-control"
+                           class="form-control @error('email') is-invalid @enderror"
                            placeholder="ejemplo@correo.com"
                            value="{{ old('email') }}">
+                    @error('email')
+                        <div class="text-danger small mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label fw-semibold">Contraseña</label>
                     <input id="password" type="password" name="password"
-                           class="form-control">
+                           class="form-control @error('password') is-invalid @enderror">
+                    @error('password')
+                        <div class="text-danger small mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label for="password_confirmation" class="form-label fw-semibold">Confirmar Contraseña</label>
                     <input id="password_confirmation" type="password" name="password_confirmation"
-                           class="form-control">
+                           class="form-control @error('password_confirmation') is-invalid @enderror">
+                    @error('password_confirmation')
+                        <div class="text-danger small mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <button type="submit" class="btn btn-brown w-100 py-2 fw-semibold">

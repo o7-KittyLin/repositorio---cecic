@@ -37,7 +37,7 @@ class RepositoryController extends Controller
             'description' => 'nullable|string',
             'file'        => 'required|file|mimes:pdf,doc,docx,ppt,pptx|max:10240',
             'category_id' => 'nullable|exists:categories,id',
-            'price'       => 'nullable|numeric|min:0',
+            'price'       => 'nullable|numeric|min:0|max:9999999.99',
         ], [
             'title.required'       => 'El título es obligatorio.',
             'title.string'         => 'El título debe ser un texto válido.',
@@ -50,6 +50,7 @@ class RepositoryController extends Controller
             'category_id.exists'   => 'La categoría seleccionada no es válida.',
             'price.numeric'        => 'El precio debe ser un número.',
             'price.min'            => 'El precio no puede ser negativo.',
+            'price.max'            => 'El precio es demasiado alto (máximo 9,999,999.99).',
         ]);
 
         if ($validator->fails()) {
@@ -93,7 +94,7 @@ class RepositoryController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->route('repository.index')
-                ->with('error', $e->getMessage())
+                ->with('error', 'No se pudo guardar el documento. Verifica el precio y el archivo e inténtalo nuevamente.')
                 ->withInput();
         }
     }
@@ -114,7 +115,7 @@ class RepositoryController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
-            'price'       => 'nullable|numeric|min:0',
+            'price'       => 'nullable|numeric|min:0|max:9999999.99',
         ], [
             'title.required'       => 'El título es obligatorio.',
             'title.string'         => 'El título debe ser un texto válido.',
@@ -123,6 +124,7 @@ class RepositoryController extends Controller
             'category_id.exists'   => 'La categoría seleccionada no es válida.',
             'price.numeric'        => 'El precio debe ser un número.',
             'price.min'            => 'El precio no puede ser negativo.',
+            'price.max'            => 'El precio es demasiado alto (máximo 9,999,999.99).',
         ]);
 
         $document->update([
