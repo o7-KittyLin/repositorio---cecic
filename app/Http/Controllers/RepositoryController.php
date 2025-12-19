@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\Category;
+use App\Models\PaymentSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -157,8 +158,9 @@ class RepositoryController extends Controller
 
         $documents = $query->latest()->paginate(12);
         $categories = Category::all();
+        $paymentSetting = PaymentSetting::first();
 
-        return view('repository.gallery', compact('documents', 'categories'));
+        return view('repository.gallery', compact('documents', 'categories', 'paymentSetting'));
     }
 
 
@@ -170,13 +172,13 @@ class RepositoryController extends Controller
     {
         $user = auth()->user();
 
-        if ($document->is_free || $user->hasRole('Administrador')) {
+        if ($document->is_free || ($user && $user->hasRole('Administrador'))) {
             return $this->serveFile($document);
         }
 
-        $purchased = $user->purchases()
-            ->where('document_id', $document->id)
-            ->exists();
+        $purchased = $user
+            ? $user->purchases()->where('document_id', $document->id)->exists()
+            : false;
 
         if ($purchased) {
             return $this->serveFile($document);

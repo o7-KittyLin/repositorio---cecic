@@ -59,6 +59,11 @@ class Document extends Model
         return $this->hasMany(Purchase::class);
     }
 
+    public function purchaseRequests()
+    {
+        return $this->hasMany(PurchaseRequest::class);
+    }
+
     public function favorites()
     {
         return $this->hasMany(Favorite::class);
@@ -104,6 +109,18 @@ class Document extends Model
         return $this->purchases()
             ->where('user_id', $user->id)
             ->where('payment_status', 'completed')
+            ->exists();
+    }
+
+    public function hasPendingRequest($user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $this->purchaseRequests()
+            ->where('user_id', $user->id)
+            ->where('status', 'pending')
             ->exists();
     }
 

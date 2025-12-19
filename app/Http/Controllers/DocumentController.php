@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\PaymentSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -60,14 +61,24 @@ class DocumentController extends Controller
 
     public function download(Document $document)
     {
+        $user = auth()->user();
+
         // Solo se descarga si es gratuito o si el usuario es Admin
-        if ($document->is_free || auth()->user()->hasRole('Administrador')) {
+        if ($document->is_free || ($user && $user->hasRole('Administrador'))) {
             $path = storage_path('app/public/' . $document->file_path);
 
             if (!file_exists($path)) {
                 return back()->with('error', 'El archivo no existe en el servidor.');
             }
 
+            return response()->download($path, basename($path));
+        }
+
+        if ($user && $document->isPurchasedBy($user)) {
+            $path = storage_path('app/public/' . $document->file_path);
+            if (!file_exists($path)) {
+                return back()->with('error', 'El archivo no existe en el servidor.');
+            }
             return response()->download($path, basename($path));
         }
 
@@ -112,6 +123,8 @@ class DocumentController extends Controller
         $document->load(['user', 'category', 'comments.user', 'likes']);
 
         $isPurchased = auth()->check() ? $document->isPurchasedBy(auth()->user()) : false;
+        $pendingRequest = auth()->check() ? $document->hasPendingRequest(auth()->user()) : false;
+        $paymentSetting = PaymentSetting::first();
 
         $canViewFull =
             $document->is_free ||
@@ -126,8 +139,10 @@ class DocumentController extends Controller
         return view('documents.show', compact(
             'document',
             'isPurchased',
+            'pendingRequest',
             'canViewFull',
-            'relatedDocuments'
+            'relatedDocuments',
+            'paymentSetting'
         ));
     }
 

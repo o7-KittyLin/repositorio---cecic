@@ -23,14 +23,28 @@
                     <div class="card-header bg-brown text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">{{ $document->title }}</h4>
                         <div class="d-flex gap-2">
-                            @if (!$document->is_free && !$isPurchased && auth()->check())
-                                <form action="{{ route('documents.purchase', $document->id) }}" method="POST"
-                                    class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="btn btn-warning btn-sm">
-                                        <i class="bi bi-cart-plus"></i> Comprar - ${{ number_format($document->price, 2) }}
-                                    </button>
-                                </form>
+                            @auth
+                                @if (!$document->is_free && !$isPurchased)
+                                    @if($pendingRequest)
+                                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                                            <i class="bi bi-hourglass-split"></i> Solicitud pendiente
+                                        </button>
+                                    @elseif($paymentSetting)
+                                        <button class="btn btn-warning btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#purchaseModal"
+                                                data-document-id="{{ $document->id }}"
+                                                data-document-title="{{ $document->title }}"
+                                                data-document-price="{{ $document->price }}">
+                                            <i class="bi bi-cart-plus"></i> Solicitar compra
+                                        </button>
+                                    @else
+                                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                                            <i class="bi bi-qr-code"></i> Pago no configurado
+                                        </button>
+                                    @endif
+                                @endif
+                            @endauth
                             @endif
 
                             @if ($canViewFull)
@@ -291,6 +305,63 @@
         </div>
     </div>
 
+    <!-- Modal de Compra -->
+    <div class="modal fade" id="purchaseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cart-check"></i> Solicitar compra
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    @if($paymentSetting)
+                        <div class="row g-3">
+                            <div class="col-md-6 text-center">
+                                <div class="border rounded p-3 bg-light h-100">
+                                    <h6 class="fw-semibold mb-2">Imagen / QR</h6>
+                                    @if($paymentSetting->qr_image_path)
+                                        <img src="{{ asset('storage/'.$paymentSetting->qr_image_path) }}" alt="QR" class="img-fluid" style="max-height:240px;">
+                                    @else
+                                        <p class="text-muted mb-0">Sin imagen configurada.</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 bg-light h-100">
+                                    <h6 class="fw-semibold">Datos de pago</h6>
+                                    <p class="mb-1"><strong>Número de cuenta:</strong> <span id="modalAccount">{{ $paymentSetting->account_number ?: 'No definido' }}</span></p>
+                                    <p class="mb-1"><strong>Llave:</strong> <span id="modalKey">{{ $paymentSetting->payment_key ?: 'No definida' }}</span></p>
+                                    <p class="small text-muted mt-3">Después de pagar, pulsa "Ya realicé el pago". Un administrador revisará tu solicitud.</p>
+                                    <div class="mt-3">
+                                        <h6 class="fw-semibold mb-1" id="documentTitle"></h6>
+                                        <div class="text-brown fw-bold" id="documentPrice"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-warning mb-0">El administrador aún no configuró los datos de pago.</div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    @if($paymentSetting)
+                        <form id="purchaseForm" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-brown">
+                                <i class="bi bi-check-circle"></i> Ya realicé el pago
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Incrementar contador de vistas cuando se carga la página
         document.addEventListener('DOMContentLoaded', function() {
@@ -301,6 +372,26 @@
                     'Content-Type': 'application/json'
                 }
             });
+
+            const purchaseModal = document.getElementById('purchaseModal');
+            if (purchaseModal) {
+                purchaseModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const documentId = button.getAttribute('data-document-id');
+                    const documentTitle = button.getAttribute('data-document-title');
+                    const documentPrice = button.getAttribute('data-document-price');
+
+                    const titleEl = document.getElementById('documentTitle');
+                    const priceEl = document.getElementById('documentPrice');
+                    if (titleEl) titleEl.textContent = documentTitle;
+                    if (priceEl) priceEl.textContent = '$' + parseFloat(documentPrice).toFixed(2);
+
+                    const form = document.getElementById('purchaseForm');
+                    if (form) {
+                        form.action = `/documents/${documentId}/purchase-request`;
+                    }
+                });
+            }
         });
     </script>
 @endsection

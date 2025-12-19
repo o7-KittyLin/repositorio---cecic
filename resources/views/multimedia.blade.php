@@ -71,6 +71,9 @@
                 </div>
             @endforelse
         </div>
+        <div class="mt-3 d-flex justify-content-end">
+            {{ $reuniones->appends(['multimedia_page' => request('multimedia_page')])->links() }}
+        </div>
     </div>
 
     {{-- Multimedia --}}
@@ -118,6 +121,9 @@
                     </div>
                 </div>
             @endforelse
+        </div>
+        <div class="mt-3 d-flex justify-content-end">
+            {{ $multimedia->appends(['reuniones_page' => request('reuniones_page')])->links() }}
         </div>
     </div>
 </div>
