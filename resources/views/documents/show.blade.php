@@ -1,5 +1,6 @@
 {{-- resources/views/documents/show.blade.php --}}
 @extends('layouts.app')
+@php use Illuminate\Support\Str; @endphp
 
 @section('content')
     <div class="container-fluid">
@@ -158,7 +159,8 @@
                             <form action="{{ route('documents.comment', $document->id) }}" method="POST" class="mb-4">
                                 @csrf
                                 <div class="mb-3">
-                                    <textarea name="comment" class="form-control" rows="3" placeholder="Escribe tu comentario..." required></textarea>
+                                    <textarea name="comment" class="form-control with-counter" rows="3" placeholder="Escribe tu comentario..." required maxlength="500" data-max="500"></textarea>
+                                    <div class="form-text text-end"><small class="counter">0/500</small></div>
                                 </div>
                                 <div class="text-end">
                                     <button type="submit" class="btn btn-brown btn-sm">
@@ -183,7 +185,16 @@
                                                 <small
                                                     class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                                             </div>
-                                            <p class="mb-0 text-dark">{{ $comment->comment }}</p>
+                                            @php
+                                                $isLongComment = Str::length($comment->comment) > 200;
+                                                $shortComment = Str::limit($comment->comment, 200);
+                                            @endphp
+                                            <p class="mb-1 text-dark comment-body" data-full="{{ $comment->comment }}" data-short="{{ $shortComment }}">
+                                                {{ $isLongComment ? $shortComment : $comment->comment }}
+                                            </p>
+                                            @if($isLongComment)
+                                                <button type="button" class="btn btn-sm btn-outline-info rounded-pill toggle-comment">Ver más</button>
+                                            @endif
                                         </div>
 
                                         @if ($comment->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
@@ -329,6 +340,28 @@ document.addEventListener('DOMContentLoaded', function() {
             if (firstInput) firstInput.focus();
         });
     }
+
+    const counters = document.querySelectorAll('.with-counter');
+    counters.forEach(el => {
+        const max = parseInt(el.dataset.max || el.getAttribute('maxlength'), 10);
+        const counter = el.parentElement.querySelector('.counter');
+        const update = () => { if (counter) counter.textContent = `${el.value.length}/${max}`; };
+        el.addEventListener('input', update);
+        update();
+    });
+
+    document.querySelectorAll('.toggle-comment').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = btn.previousElementSibling;
+            if (!p) return;
+            const full = p.getAttribute('data-full');
+            const short = p.getAttribute('data-short');
+            const isOpen = btn.dataset.state === 'open';
+            p.textContent = isOpen ? short : full;
+            btn.textContent = isOpen ? 'Ver más' : 'Ver menos';
+            btn.dataset.state = isOpen ? 'closed' : 'open';
+        });
+    });
 });
 </script>
 @endpush

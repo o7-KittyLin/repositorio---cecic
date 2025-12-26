@@ -26,7 +26,8 @@
 
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Descripcion</label>
-                                <textarea name="description" class="form-control" rows="3">{{ old('description') }}</textarea>
+                                <textarea name="description" class="form-control with-counter" rows="3" maxlength="300" data-max="300">{{ old('description') }}</textarea>
+                                <div class="form-text text-end"><small class="counter">0/300</small></div>
                                 @error('description')
                                     <div class="text-danger small">{{ $message }}</div>
                                 @enderror
@@ -176,10 +177,10 @@ document.addEventListener('DOMContentLoaded', function() {
         startError.textContent = '';
 
         const val = (startHourInput.value || '').trim();
-        if (!isValidFormat(val)) {
-            startError.textContent = 'Formato invalido HH:MM';
-            return false;
-        }
+    if (!isValidFormat(val)) {
+        startError.textContent = 'Formato invalido HH:MM';
+        return false;
+    }
 
         const t = to24Hour(val, startPeriodSelect.value);
         if (!isValidRange(t)) {
@@ -220,6 +221,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return true;
     }
+
+    // Contador de texto
+    document.querySelectorAll('.with-counter').forEach(el => {
+        const max = parseInt(el.dataset.max || el.getAttribute('maxlength'), 10);
+        const counter = el.parentElement.querySelector('.counter');
+        const update = () => { if (counter) counter.textContent = `${el.value.length}/${max}`; };
+        el.addEventListener('input', update);
+        update();
+    });
 
     startHourInput.addEventListener('input', validateStart);
     startPeriodSelect.addEventListener('change', validateStart);

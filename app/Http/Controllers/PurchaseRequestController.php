@@ -44,9 +44,9 @@ class PurchaseRequestController extends Controller
         ]);
 
         // Notificar a administradores
-        $admins = User::role('Administrador')->pluck('email')->filter()->unique();
-        if ($admins->isNotEmpty()) {
-            Mail::to($admins)->send(new PurchaseRequestCreatedMail($purchaseRequest));
+        $adminsAndStaff = User::role(['Administrador','Empleado'])->pluck('email')->filter()->unique();
+        if ($adminsAndStaff->isNotEmpty()) {
+            Mail::to($adminsAndStaff)->send(new PurchaseRequestCreatedMail($purchaseRequest));
         }
 
         return back()->with('success', 'Solicitud enviada. El administrador revisará tu compra.');
@@ -93,6 +93,12 @@ class PurchaseRequestController extends Controller
                 if ($purchaseRequest->user && $purchaseRequest->user->email) {
                     Mail::to($purchaseRequest->user->email)->send(new PurchaseRejectedMail($purchaseRequest));
                 }
+            }
+
+            // Notificar a administradores/empleados sobre el resultado
+            $adminsAndStaff = User::role(['Administrador','Empleado'])->pluck('email')->filter()->unique();
+            if ($adminsAndStaff->isNotEmpty()) {
+                Mail::to($adminsAndStaff)->send(new \App\Mail\PurchaseRequestStatusChangedMail($purchaseRequest));
             }
         });
 

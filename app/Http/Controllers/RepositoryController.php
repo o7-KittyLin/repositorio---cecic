@@ -34,15 +34,16 @@ class RepositoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:300',
             'file'        => 'required|file|mimes:pdf,doc,docx,ppt,pptx|max:10240',
             'category_id' => 'nullable|exists:categories,id',
-            'price'       => 'nullable|numeric|min:0|max:9999999.99',
+            'price'       => 'nullable|numeric|min:0|max:99999999.99',
         ], [
             'title.required'       => 'El título es obligatorio.',
             'title.string'         => 'El título debe ser un texto válido.',
             'title.max'            => 'El título no puede superar los 255 caracteres.',
             'description.string'   => 'La descripción debe ser un texto válido.',
+            'description.max'      => 'La descripción no puede superar los 300 caracteres.',
             'file.required'        => 'Debes subir un archivo.',
             'file.file'            => 'El archivo no es válido.',
             'file.mimes'           => 'El archivo debe ser PDF, DOC, DOCX, PPT o PPTX.',
@@ -50,7 +51,7 @@ class RepositoryController extends Controller
             'category_id.exists'   => 'La categoría seleccionada no es válida.',
             'price.numeric'        => 'El precio debe ser un número.',
             'price.min'            => 'El precio no puede ser negativo.',
-            'price.max'            => 'El precio es demasiado alto (máximo 9,999,999.99).',
+            'price.max'            => 'El precio es demasiado alto (máximo 99,999,999.99).',
         ]);
 
         if ($validator->fails()) {
@@ -113,18 +114,19 @@ class RepositoryController extends Controller
     {
         $request->validate([
             'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:300',
             'category_id' => 'nullable|exists:categories,id',
-            'price'       => 'nullable|numeric|min:0|max:9999999.99',
+            'price'       => 'nullable|numeric|min:0|max:99999999.99',
         ], [
             'title.required'       => 'El título es obligatorio.',
             'title.string'         => 'El título debe ser un texto válido.',
             'title.max'            => 'El título no puede superar los 255 caracteres.',
             'description.string'   => 'La descripción debe ser un texto válido.',
+            'description.max'      => 'La descripción no puede superar los 300 caracteres.',
             'category_id.exists'   => 'La categoría seleccionada no es válida.',
             'price.numeric'        => 'El precio debe ser un número.',
             'price.min'            => 'El precio no puede ser negativo.',
-            'price.max'            => 'El precio es demasiado alto (máximo 9,999,999.99).',
+            'price.max'            => 'El precio es demasiado alto (máximo 99,999,999.99).',
         ]);
 
         $document->update([

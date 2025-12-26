@@ -34,7 +34,7 @@ class AnnouncementController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:300',
             'type' => 'required|in:reunion,multimedia',
             'start_date' => ['nullable','required_if:type,reunion','date'],
             'start_hour' => ['nullable','required_if:type,reunion','regex:/^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/'],
@@ -48,6 +48,7 @@ class AnnouncementController extends Controller
             'title.string' => 'El titulo debe ser un texto valido.',
             'title.max' => 'El titulo no puede superar los 255 caracteres.',
             'description.string' => 'La descripcion debe ser un texto valido.',
+            'description.max' => 'La descripcion no puede superar los 300 caracteres.',
             'type.required' => 'Debes seleccionar el tipo de anuncio.',
             'type.in' => 'Tipo de anuncio no valido.',
             'start_date.required_if' => 'La fecha es obligatoria para reuniones.',
@@ -169,7 +170,7 @@ class AnnouncementController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:300',
             'type' => 'required|in:reunion,multimedia',
             'start_date' => ['nullable','required_if:type,reunion','date'],
             'start_hour' => ['nullable','required_if:type,reunion','regex:/^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/'],
@@ -183,6 +184,7 @@ class AnnouncementController extends Controller
             'title.string' => 'El titulo debe ser un texto valido.',
             'title.max' => 'El titulo no puede superar los 255 caracteres.',
             'description.string' => 'La descripcion debe ser un texto valido.',
+            'description.max' => 'La descripcion no puede superar los 300 caracteres.',
             'type.required' => 'Debes seleccionar el tipo de anuncio.',
             'type.in' => 'Tipo de anuncio no valido.',
             'start_date.required_if' => 'La fecha es obligatoria para reuniones.',

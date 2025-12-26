@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('announcements:deactivate-expired')->hourly();
-        $schedule->command('account-deletions:process')->dailyAt('03:00');
+        $schedule->command('account-deletions:process')->everyMinute();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         // Alias para roles/permisos (Spatie)

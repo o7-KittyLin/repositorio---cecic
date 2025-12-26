@@ -44,7 +44,9 @@ class DocumentInteractionController extends Controller
     public function comment(Request $request, Document $document)
     {
         $request->validate([
-            'comment' => 'required|string|max:1000'
+            'comment' => 'required|string|max:500'
+        ], [
+            'comment.max' => 'El comentario no puede superar los 500 caracteres.'
         ]);
 
         Comment::create([

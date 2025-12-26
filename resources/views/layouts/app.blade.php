@@ -148,6 +148,32 @@
             text-align: center;
             padding: 15px 0;
         }
+
+        /* Paginación */
+        .pagination {
+            justify-content: flex-end;
+            gap: 6px;
+        }
+        .pagination .page-link {
+            color: #4e342e;
+            border-radius: 8px;
+            padding: 6px 12px;
+            border: 1px solid #dcdcdc;
+        }
+        .pagination .page-link:hover {
+            color: #fff;
+            background-color: #4e342e;
+            border-color: #4e342e;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #4e342e;
+            border-color: #4e342e;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #aaa;
+            background-color: #f8f8f8;
+            border-color: #e5e5e5;
+        }
     </style>
 
     @stack('styles')
