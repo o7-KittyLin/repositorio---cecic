@@ -26,8 +26,7 @@ class AccountDeletionController extends Controller
             return back()->with('info', 'Ya tienes una eliminación programada para el ' . $existing->scheduled_for->format('d/m/Y'));
         }
 
-        // Solo para pruebas rápidas: 3 minutos. Ajustar a días hábiles en prod.
-        $scheduledFor = now()->addMinutes(3);
+        $scheduledFor = $this->addBusinessDays(now(), 3);
 
         $deletion = AccountDeletion::create([
             'user_id' => $user->id,

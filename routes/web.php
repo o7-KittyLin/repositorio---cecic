@@ -11,6 +11,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RepositoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -41,6 +42,10 @@ Route::get('documents/download/{document}', [DocumentController::class, 'downloa
 // Ver documento (detalle)
 Route::get('documents/{document}', [DocumentController::class, 'show'])
     ->name('documents.show');
+
+// Contacto público
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::view('/contact', 'contact')->name('contact.show');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::get('/dashboard', function () {

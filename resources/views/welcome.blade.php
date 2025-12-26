@@ -37,6 +37,7 @@
                 <li><a href="#politicas">Políticas</a></li>
                 <li><a href="#aliados">Aliados</a></li>
                 <li><a href="{{ route('repository.gallery') }}">Observatorio</a></li>
+                <li><a href="{{ route('contact.show') }}">Contáctanos</a></li>
             </ul>
             <div class="acciones">
                 @guest

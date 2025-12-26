@@ -12,7 +12,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('announcements.store') }}" method="POST">
+                    <form action="{{ route('announcements.store') }}" method="POST" novalidate>
                         @csrf
 
                         <div class="row g-3">
@@ -94,9 +94,9 @@
 
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Link del contenido*</label>
-                                <input type="url" name="link" class="form-control" value="{{ old('link') }}" placeholder="https://youtube.com/... o https://meet.google.com/...">
+                                <input type="url" name="link" class="form-control @error('link') is-invalid @enderror" value="{{ old('link') }}" placeholder="https://youtube.com/... o https://meet.google.com/...">
                                 @error('link')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
