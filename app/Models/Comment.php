@@ -13,9 +13,9 @@ class Comment extends Model
         'user_id',
         'document_id',
         'comment',
+        'parent_id',
     ];
 
-    // RELACIONES 🔗
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -24,5 +24,15 @@ class Comment extends Model
     public function document()
     {
         return $this->belongsTo(Document::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')->with('user');
     }
 }

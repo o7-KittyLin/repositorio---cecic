@@ -149,7 +149,7 @@
                     <div class="card-header bg-light">
                         <h5 class="mb-0">
                             <i class="bi bi-chat-left-text"></i> Comentarios
-                            <span class="badge bg-brown ms-2">{{ $document->comments->count() }}</span>
+                            <span class="badge bg-brown ms-2">{{ $commentsCount }}</span>
                         </h5>
                     </div>
 
@@ -176,25 +176,27 @@
 
                         <!-- Lista de comentarios -->
                         <div class="comments-section">
-                            @forelse($document->comments as $comment)
+                            @forelse($comments as $comment)
                                 <div class="comment-item border-bottom pb-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
                                             <div class="d-flex align-items-center mb-1">
                                                 <strong class="me-2">{{ $comment->user->name }}</strong>
-                                                <small
-                                                    class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                                <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                                             </div>
                                             @php
                                                 $isLongComment = Str::length($comment->comment) > 200;
                                                 $shortComment = Str::limit($comment->comment, 200);
                                             @endphp
-                                            <p class="mb-1 text-dark comment-body" data-full="{{ $comment->comment }}" data-short="{{ $shortComment }}">
+                                            <p id="comment-body-{{ $comment->id }}" class="mb-1 text-dark comment-body" data-full="{{ $comment->comment }}" data-short="{{ $shortComment }}">
                                                 {{ $isLongComment ? $shortComment : $comment->comment }}
                                             </p>
-                                            @if($isLongComment)
-                                                <button type="button" class="btn btn-sm btn-outline-info rounded-pill toggle-comment">Ver más</button>
-                                            @endif
+                                            <div class="d-flex align-items-center gap-2">
+                                                @if($isLongComment)
+                                                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill toggle-comment" data-target="comment-body-{{ $comment->id }}">Ver más</button>
+                                                @endif
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill reply-toggle" data-comment-id="{{ $comment->id }}">Responder</button>
+                                            </div>
                                         </div>
 
                                         @if ($comment->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
@@ -208,6 +210,63 @@
                                             </form>
                                         @endif
                                     </div>
+
+                                    {{-- Responder --}}
+                                    <div class="reply-form mt-2" id="reply-form-{{ $comment->id }}" style="display:none;">
+                                        <form action="{{ route('documents.comment', $document->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                            <div class="mb-2">
+                                                <textarea name="comment" class="form-control with-counter" rows="2" maxlength="500" data-max="500" placeholder="Escribe tu respuesta..."></textarea>
+                                                <div class="form-text text-end"><small class="counter">0/500</small></div>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-sm btn-brown">Responder</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary cancel-reply" data-comment-id="{{ $comment->id }}">Cancelar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    {{-- Hijos con paginación 5 --}}
+                                    @php
+                                        $replies = $comment->children()->paginate(5, ['*'], 'reply_page_'.$comment->id);
+                                    @endphp
+                                    @if($replies->total() > 0)
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill toggle-replies mt-2" data-target="replies-{{ $comment->id }}">
+                                            Ver respuestas ({{ $replies->total() }})
+                                        </button>
+                                        <div class="mt-3 ps-3 border-start replies" id="replies-{{ $comment->id }}" style="display:none;">
+                                            @foreach($replies as $child)
+                                                @php
+                                                    $isLongChild = Str::length($child->comment) > 200;
+                                                    $shortChild = Str::limit($child->comment, 200);
+                                                @endphp
+                                                <div class="mb-3">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <strong class="me-2">{{ $child->user->name }}</strong>
+                                                        <small class="text-muted">{{ $child->created_at->diffForHumans() }}</small>
+                                                    </div>
+                                                    <p id="comment-body-{{ $child->id }}" class="mb-1 text-dark comment-body" data-full="{{ $child->comment }}" data-short="{{ $shortChild }}">
+                                                        {{ $isLongChild ? $shortChild : $child->comment }}
+                                                    </p>
+                                                    @if($isLongChild)
+                                                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill toggle-comment" data-target="comment-body-{{ $child->id }}">Ver más</button>
+                                                    @endif
+                                                    @if ($child->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
+                                                        <form action="{{ route('comments.destroy', $child->id) }}" method="POST" class="d-inline">
+                                                            @csrf @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar este comentario?')">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                            <div class="d-flex justify-content-end">
+                                                {{ $replies->withQueryString()->links() }}
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             @empty
                                 <div class="text-center text-muted py-4">
@@ -215,6 +274,9 @@
                                     <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
                                 </div>
                             @endforelse
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            {{ $comments->links() }}
                         </div>
                     </div>
                 </div>
@@ -352,7 +414,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('.toggle-comment').forEach(btn => {
         btn.addEventListener('click', () => {
-            const p = btn.previousElementSibling;
+            const targetId = btn.dataset.target;
+            const p = targetId ? document.getElementById(targetId) : null;
             if (!p) return;
             const full = p.getAttribute('data-full');
             const short = p.getAttribute('data-short');
@@ -360,6 +423,33 @@ document.addEventListener('DOMContentLoaded', function() {
             p.textContent = isOpen ? short : full;
             btn.textContent = isOpen ? 'Ver más' : 'Ver menos';
             btn.dataset.state = isOpen ? 'closed' : 'open';
+        });
+    });
+
+    document.querySelectorAll('.reply-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.commentId;
+            const form = document.getElementById(`reply-form-${id}`);
+            if (!form) return;
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+    });
+    document.querySelectorAll('.cancel-reply').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.commentId;
+            const form = document.getElementById(`reply-form-${id}`);
+            if (form) form.style.display = 'none';
+        });
+    });
+
+    document.querySelectorAll('.toggle-replies').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            const container = document.getElementById(targetId);
+            if (!container) return;
+            const isHidden = container.style.display === 'none' || container.style.display === '';
+            container.style.display = isHidden ? 'block' : 'none';
+            btn.textContent = isHidden ? 'Ocultar respuestas' : btn.textContent.replace('Ocultar respuestas', 'Ver respuestas');
         });
     });
 });

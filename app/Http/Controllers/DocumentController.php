@@ -121,7 +121,7 @@ class DocumentController extends Controller
     {
         $document->increment('views_count');
 
-        $document->load(['user', 'category', 'comments.user', 'likes']);
+        $document->load(['user', 'category', 'likes']);
 
         $isPurchased = auth()->check() ? $document->isPurchasedBy(auth()->user()) : false;
         $pendingRequest = null;
@@ -143,13 +143,22 @@ class DocumentController extends Controller
             ->limit(4)
             ->get();
 
+        $comments = $document->comments()
+            ->whereNull('parent_id')
+            ->with(['user', 'children.user'])
+            ->latest()
+            ->paginate(10);
+        $commentsCount = $document->comments()->count();
+
         return view('documents.show', compact(
             'document',
             'isPurchased',
             'canViewFull',
             'relatedDocuments',
             'pendingRequest',
-            'paymentSetting'
+            'paymentSetting',
+            'comments',
+            'commentsCount'
         ));
     }
 

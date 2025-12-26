@@ -44,15 +44,27 @@ class DocumentInteractionController extends Controller
     public function comment(Request $request, Document $document)
     {
         $request->validate([
-            'comment' => 'required|string|max:500'
+            'comment' => 'required|string|max:500',
+            'parent_id' => 'nullable|exists:comments,id'
         ], [
-            'comment.max' => 'El comentario no puede superar los 500 caracteres.'
+            'comment.max' => 'El comentario no puede superar los 500 caracteres.',
         ]);
+
+        // Asegurar que el parent pertenezca al mismo documento
+        if ($request->filled('parent_id')) {
+            $parent = Comment::where('id', $request->parent_id)
+                ->where('document_id', $document->id)
+                ->first();
+            if (!$parent) {
+                return back()->withErrors(['comment' => 'No se pudo responder este comentario.'])->withInput();
+            }
+        }
 
         Comment::create([
             'user_id' => auth()->id(),
             'document_id' => $document->id,
-            'comment' => $request->comment
+            'comment' => $request->comment,
+            'parent_id' => $request->parent_id,
         ]);
 
         return back()->with('success', 'Comentario agregado.');
