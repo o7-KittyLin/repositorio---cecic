@@ -200,14 +200,25 @@
                                         </div>
 
                                         @if ($comment->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
-                                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
-                                                class="ms-2">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('¿Eliminar este comentario?')">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
+                                        <form id="deleteCommentForm-{{ $comment->id }}"
+                                            action="{{ route('comments.destroy', $comment->id) }}"
+                                            method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmDeleteCommentModal"
+                                                data-comment-id="{{ $comment->id }}"
+                                                data-comment-author="{{ $comment->user->name }}"
+                                                data-is-owner="{{ $comment->user_id === auth()->id() ? '1' : '0' }}"
+                                            >
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+
+                                        </form>
                                         @endif
                                     </div>
 
@@ -253,13 +264,28 @@
                                                         <button type="button" class="btn btn-sm btn-outline-info rounded-pill toggle-comment" data-target="comment-body-{{ $child->id }}">Ver más</button>
                                                     @endif
                                                     @if ($child->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
-                                                        <form action="{{ route('comments.destroy', $child->id) }}" method="POST" class="d-inline">
-                                                            @csrf @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar este comentario?')">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
-                                                        </form>
+
+                                                    <form id="deleteCommentForm-{{ $child->id }}"
+                                                        action="{{ route('comments.destroy', $child->id) }}"
+                                                        method="POST"
+                                                        class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#confirmDeleteCommentModal"
+                                                            data-comment-id="{{ $child->id }}"
+                                                            data-comment-author="{{ $child->user->name }}"
+                                                            data-is-owner="{{ $child->user_id === auth()->id() ? '1' : '0' }}"
+                                                        >
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+
                                                     @endif
+
                                                 </div>
                                             @endforeach
                                             <div class="d-flex justify-content-end">
@@ -376,85 +402,36 @@
         </div>
     </div>
 
+<!-- Modal eliminar comentario -->
+    <div class="modal fade" id="confirmDeleteCommentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Eliminar comentario
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-    <script>
-        // Incrementar contador de vistas cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch(`/documents/{{ $document->id }}/view`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                }
-            });
+            <div class="modal-body">
+                <span id="deleteCommentMessage">
+                    ¿Seguro que deseas eliminar este comentario?
+                </span>
+                <br>
+                <small class="text-muted">Esta acción no se puede deshacer.</small>
+            </div>
 
-        });
-    </script>
-@endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const purchaseModal = document.getElementById('purchaseModal');
-    if (purchaseModal) {
-        purchaseModal.addEventListener('shown.bs.modal', function () {
-            const firstInput = purchaseModal.querySelector('button[data-submit="purchase-request"]');
-            if (firstInput) firstInput.focus();
-        });
-    }
-
-    const counters = document.querySelectorAll('.with-counter');
-    counters.forEach(el => {
-        const max = parseInt(el.dataset.max || el.getAttribute('maxlength'), 10);
-        const counter = el.parentElement.querySelector('.counter');
-        const update = () => { if (counter) counter.textContent = `${el.value.length}/${max}`; };
-        el.addEventListener('input', update);
-        update();
-    });
-
-    document.querySelectorAll('.toggle-comment').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.dataset.target;
-            const p = targetId ? document.getElementById(targetId) : null;
-            if (!p) return;
-            const full = p.getAttribute('data-full');
-            const short = p.getAttribute('data-short');
-            const isOpen = btn.dataset.state === 'open';
-            p.textContent = isOpen ? short : full;
-            btn.textContent = isOpen ? 'Ver más' : 'Ver menos';
-            btn.dataset.state = isOpen ? 'closed' : 'open';
-        });
-    });
-
-    document.querySelectorAll('.reply-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.commentId;
-            const form = document.getElementById(`reply-form-${id}`);
-            if (!form) return;
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        });
-    });
-    document.querySelectorAll('.cancel-reply').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.commentId;
-            const form = document.getElementById(`reply-form-${id}`);
-            if (form) form.style.display = 'none';
-        });
-    });
-
-    document.querySelectorAll('.toggle-replies').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.dataset.target;
-            const container = document.getElementById(targetId);
-            if (!container) return;
-            const isHidden = container.style.display === 'none' || container.style.display === '';
-            container.style.display = isHidden ? 'block' : 'none';
-            btn.textContent = isHidden ? 'Ocultar respuestas' : btn.textContent.replace('Ocultar respuestas', 'Ver respuestas');
-        });
-    });
-});
-</script>
-@endpush
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button class="btn btn-danger" id="confirmDeleteCommentBtn">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal compra simulada -->
 <div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
@@ -494,3 +471,141 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* ===============================
+       📈 Contador de vistas
+    =============================== */
+    fetch(`/documents/{{ $document->id }}/view`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    });
+
+
+    /* ===============================
+       🛒 Modal de compra – autofocus
+    =============================== */
+    const purchaseModal = document.getElementById('purchaseModal');
+    if (purchaseModal) {
+        purchaseModal.addEventListener('shown.bs.modal', function () {
+            const btn = purchaseModal.querySelector('button[data-submit="purchase-request"]');
+            if (btn) btn.focus();
+        });
+    }
+
+
+    /* ===============================
+       🔢 Contadores de caracteres
+    =============================== */
+    document.querySelectorAll('.with-counter').forEach(el => {
+        const max = parseInt(el.dataset.max || el.getAttribute('maxlength'), 10);
+        const counter = el.parentElement.querySelector('.counter');
+
+        const update = () => {
+            if (counter && max) {
+                counter.textContent = `${el.value.length}/${max}`;
+            }
+        };
+
+        el.addEventListener('input', update);
+        update();
+    });
+
+
+    /* ===============================
+       💬 Ver más / ver menos comentario
+    =============================== */
+    document.querySelectorAll('.toggle-comment').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = document.getElementById(btn.dataset.target);
+            if (!p) return;
+
+            const full = p.dataset.full;
+            const short = p.dataset.short;
+            const isOpen = btn.dataset.state === 'open';
+
+            p.textContent = isOpen ? short : full;
+            btn.textContent = isOpen ? 'Ver más' : 'Ver menos';
+            btn.dataset.state = isOpen ? 'closed' : 'open';
+        });
+    });
+
+
+    /* ===============================
+       ↩️ Mostrar / ocultar responder
+    =============================== */
+    document.querySelectorAll('.reply-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const form = document.getElementById(`reply-form-${btn.dataset.commentId}`);
+            if (form) form.style.display = 'block';
+        });
+    });
+
+    document.querySelectorAll('.cancel-reply').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const form = document.getElementById(`reply-form-${btn.dataset.commentId}`);
+            if (form) form.style.display = 'none';
+        });
+    });
+
+
+    /* ===============================
+       🧵 Mostrar / ocultar respuestas
+    =============================== */
+    document.querySelectorAll('.toggle-replies').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const container = document.getElementById(btn.dataset.target);
+            if (!container) return;
+
+            const isHidden = container.style.display === 'none' || container.style.display === '';
+            container.style.display = isHidden ? 'block' : 'none';
+            btn.textContent = isHidden ? 'Ocultar respuestas' : 'Ver respuestas';
+        });
+    });
+
+
+    /* ===============================
+    🗑️ Modal eliminar comentario
+    =============================== */
+    const deleteCommentModal = document.getElementById('confirmDeleteCommentModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteCommentBtn');
+    const deleteMessage = document.getElementById('deleteCommentMessage');
+
+    let currentCommentId = null;
+
+    if (deleteCommentModal) {
+        deleteCommentModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            currentCommentId = button.dataset.commentId;
+            const author = button.dataset.commentAuthor;
+            const isOwner = button.dataset.isOwner === '1';
+
+            if (isOwner) {
+                deleteMessage.textContent = '¿Seguro que deseas eliminar tu comentario?';
+            } else {
+                deleteMessage.textContent = `¿Seguro que deseas eliminar el comentario de ${author}?`;
+            }
+        });
+    }
+
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function () {
+            if (!currentCommentId) return;
+
+            const form = document.getElementById('deleteCommentForm-' + currentCommentId);
+            if (form) form.submit();
+        });
+    }
+
+
+});
+</script>
+@endpush
+@endsection

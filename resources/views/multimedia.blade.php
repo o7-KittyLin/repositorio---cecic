@@ -119,19 +119,31 @@
                                 </a>
                             @endif
                             @auth
-                                @role('Administrador')
-                                    <div class="mt-2">
-                                        <a href="{{ route('announcements.edit', $item->id) }}" class="btn btn-sm btn-outline-warning">
-                                            <i class="bi bi-pencil"></i> Editar
-                                        </a>
-                                        <form action="{{ route('announcements.destroy', $item->id) }}" method="POST" class="d-inline">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                @endrole
+                            @role('Administrador')
+                            <div class="mt-2">
+                                <a href="{{ route('announcements.edit', $item->id) }}"
+                                class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+
+                                <form id="deleteAnnouncementForm-{{ $item->id }}"
+                                    action="{{ route('announcements.destroy', $item->id) }}"
+                                    method="POST"
+                                    class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmDeleteAnnouncementModal"
+                                            data-announcement-id="{{ $item->id }}"
+                                            data-announcement-title="{{ $item->title }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            @endrole
                             @endauth
                         </div>
                     </div>
@@ -149,17 +161,52 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Confirmar Eliminación de Anuncio -->
+<div class="modal fade" id="confirmDeleteAnnouncementModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+            <i class="bi bi-exclamation-triangle"></i> Eliminar anuncio
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">
+            ¿Seguro que deseas eliminar el anuncio
+            <strong id="announcementTitleToDelete">seleccionado</strong>?
+        </p>
+        <p class="text-muted mb-0">
+            Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" id="confirmDeleteAnnouncementBtn">
+            <i class="bi bi-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+
+    /* ===============================
+       VER MÁS / VER MENOS (Multimedia)
+    =============================== */
     document.querySelectorAll('.multimedia-desc').forEach(p => {
         const full = p.getAttribute('data-full');
         const short = p.getAttribute('data-short');
         const isLong = (full && short && full.length > short.length);
+
         if (!isLong) return;
-        // Ya hay un botón insertado en Blade; aseguramos estado inicial
+
+        // Estado inicial
         p.textContent = short;
     });
 
@@ -168,14 +215,57 @@ document.addEventListener('DOMContentLoaded', () => {
             const container = btn.closest('.card-body');
             const p = container ? container.querySelector('.multimedia-desc') : null;
             if (!p) return;
+
             const full = p.getAttribute('data-full');
             const short = p.getAttribute('data-short');
             const isExpanded = btn.dataset.state === 'open';
+
             p.textContent = isExpanded ? short : full;
             btn.textContent = isExpanded ? 'Ver más' : 'Ver menos';
             btn.dataset.state = isExpanded ? 'closed' : 'open';
         });
     });
+
+
+    /* ===============================
+       MODAL CONFIRMAR ELIMINAR ANUNCIO
+    =============================== */
+    const modalEl = document.getElementById('confirmDeleteAnnouncementModal');
+    const confirmBtn = document.getElementById('confirmDeleteAnnouncementBtn');
+    let currentAnnouncementId = null;
+
+    if (modalEl) {
+        modalEl.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            if (!button) return;
+
+            const announcementId = button.getAttribute('data-announcement-id');
+            const announcementTitle = button.getAttribute('data-announcement-title');
+
+            currentAnnouncementId = announcementId;
+
+            const titleSpan = modalEl.querySelector('#announcementTitleToDelete');
+            if (titleSpan) {
+                titleSpan.textContent = announcementTitle || 'este anuncio';
+            }
+        });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+            if (!currentAnnouncementId) return;
+
+            const form = document.getElementById(
+                'deleteAnnouncementForm-' + currentAnnouncementId
+            );
+
+            if (form) {
+                form.submit();
+            }
+        });
+    }
+
 });
+
 </script>
 @endpush

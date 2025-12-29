@@ -115,4 +115,68 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
+    // ---------- MAPA INTERACTIVO COLOMBIA ----------
+  (function(){
+    const mapa = document.querySelector('.mapa-svg');
+    if (!mapa) return;
+
+    const titulo = document.getElementById('mapaTitulo');
+    const lugar = document.getElementById('mapaLugar');
+    const descripcion = document.getElementById('mapaDescripcion');
+    const img = document.getElementById('mapaImg');
+
+    if (!titulo || !lugar || !descripcion || !img) return;
+
+    const departamentos = {
+      COAMA: { nombre:"Amazonas", region:"Región Amazónica", desc:"Alta biodiversidad y ecosistemas estratégicos.", img:"/img/logos/Logo.png" },
+      COANT: { nombre:"Antioquia", region:"Región Andina", desc:"Centro clave de producción e investigación.", img:"/img/logos/Logo.png" },
+      COARA: { nombre:"Arauca", region:"Orinoquía", desc:"Zona agropecuaria y fronteriza.", img:"/img/logos/Logo.png" },
+      COATL: { nombre:"Atlántico", region:"Región Caribe", desc:"Desarrollo logístico y académico.", img:"/img/logos/Logo.png" },
+      COBOL: { nombre:"Bolívar", region:"Región Caribe", desc:"Territorio histórico y productivo.", img:"/img/logos/Logo.png" },
+      COBOY: { nombre:"Boyacá", region:"Región Andina", desc:"Base rural y académica sólida.", img:"/img/logos/Logo.png" },
+      COCAL: { nombre:"Caldas", region:"Región Andina", desc:"Innovación agrícola.", img:"/img/logos/Logo.png" },
+      COCAQ: { nombre:"Caquetá", region:"Región Amazónica", desc:"Biodiversidad y producción emergente.", img:"/img/logos/Logo.png" },
+      COCAS: { nombre:"Casanare", region:"Orinoquía", desc:"Producción agroindustrial.", img:"/img/logos/Logo.png" },
+      COCAU: { nombre:"Cauca", region:"Región Pacífica", desc:"Riqueza cultural y agrícola.", img:"/img/logos/Logo.png" },
+      COCES: { nombre:"Cesar", region:"Región Caribe", desc:"Desarrollo rural y productivo.", img:"/img/logos/Logo.png" },
+      COCHO: { nombre:"Chocó", region:"Región Pacífica", desc:"Alta biodiversidad y comunidades ancestrales.", img:"/img/logos/Logo.png" },
+      COCOR: { nombre:"Córdoba", region:"Región Caribe", desc:"Producción agropecuaria.", img:"/img/logos/Logo.png" },
+      COCUN: { nombre:"Cundinamarca", region:"Región Andina", desc:"Centro institucional y científico.", img:"/img/logos/Logo.png" },
+      CODC:  { nombre:"Bogotá D.C.", region:"Capital", desc:"Centro administrativo y académico.", img:"/img/logos/Logo.png" },
+      COGUA: { nombre:"Guainía", region:"Región Amazónica", desc:"Territorio natural y cultural.", img:"/img/logos/Logo.png" },
+      COGUV: { nombre:"Guaviare", region:"Región Amazónica", desc:"Zona de transición ecológica.", img:"/img/logos/Logo.png" },
+      COHUI: { nombre:"Huila", region:"Región Andina", desc:"Producción agrícola diversificada.", img:"/img/logos/Logo.png" },
+      COLAG: { nombre:"La Guajira", region:"Región Caribe", desc:"Saberes ancestrales y clima extremo.", img:"/img/logos/Logo.png" },
+      COMAG: { nombre:"Magdalena", region:"Región Caribe", desc:"Zona agrícola y turística.", img:"/img/logos/Logo.png" },
+      COMET: { nombre:"Meta", region:"Orinoquía", desc:"Producción ganadera y agrícola.", img:"/img/logos/Logo.png" },
+      CONAR: { nombre:"Nariño", region:"Región Pacífica", desc:"Diversidad climática y agrícola.", img:"/img/logos/Logo.png" },
+      CONSA: { nombre:"Norte de Santander", region:"Región Andina", desc:"Zona fronteriza productiva.", img:"/img/logos/Logo.png" },
+      COPUT: { nombre:"Putumayo", region:"Región Amazónica", desc:"Territorio biodiverso.", img:"/img/logos/Logo.png" },
+      COQUI: { nombre:"Quindío", region:"Región Andina", desc:"Innovación agrícola.", img:"/img/logos/Logo.png" },
+      CORIS: { nombre:"Risaralda", region:"Región Andina", desc:"Investigación y desarrollo rural.", img:"/img/logos/Logo.png" },
+      COSAN: { nombre:"Santander", region:"Región Andina", desc:"Innovación productiva.", img:"/img/logos/Logo.png" },
+      COSAP: { nombre:"San Andrés y Providencia", region:"Caribe Insular", desc:"Biodiversidad marina y cultura raizal.", img:"/img/logos/Logo.png" },
+      COSUC: { nombre:"Sucre", region:"Región Caribe", desc:"Producción agropecuaria.", img:"/img/logos/Logo.png" },
+      COTOL: { nombre:"Tolima", region:"Región Andina", desc:"Investigación agrícola.", img:"/img/logos/Logo.png" },
+      COVAC: { nombre:"Valle del Cauca", region:"Región Pacífica", desc:"Centro industrial y agrícola.", img:"/img/logos/Logo.png" },
+      COVAU: { nombre:"Vaupés", region:"Región Amazónica", desc:"Territorio indígena.", img:"/img/logos/Logo.png" },
+      COVID: { nombre:"Vichada", region:"Orinoquía", desc:"Expansión agrícola sostenible.", img:"/img/logos/Logo.png" }
+    };
+
+
+    mapa.querySelectorAll('path').forEach(path => {
+      path.addEventListener('mouseenter', () => {
+        const d = departamentos[path.id];
+        if (!d) return;
+
+        titulo.textContent = d.nombre;
+        lugar.textContent = d.region;
+        descripcion.textContent = d.desc;
+        img.src = d.img;
+      });
+    });
+
+  })();
+
+
 });
