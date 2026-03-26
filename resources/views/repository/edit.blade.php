@@ -33,8 +33,10 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Título*</label>
-                        <input type="text" name="title" class="form-control"
+                        <input type="text" name="title" class="form-control with-counter"
+                               maxlength="255" data-max="255"
                                value="{{ old('title', $document->title) }}">
+                        <div class="form-text text-end"><small class="counter">0/255</small></div>
                         @error('title')
                         <div class="text-danger small">{{ $message }}</div>
                         @enderror
@@ -66,7 +68,7 @@
 
                     <div class="col-md-6" id="priceField" style="{{ $document->is_free ? 'display:none;' : '' }}">
                         <label class="form-label fw-semibold">Precio</label>
-                        <input type="number" step="0.01" name="price" class="form-control"
+                        <input type="number" step="0.01" min="0" max="99999999.99" name="price" class="form-control"
                                value="{{ old('price', $document->price) }}" placeholder="0.00">
                         @error('price')
                         <div class="text-danger small">{{ $message }}</div>
@@ -75,7 +77,8 @@
 
                     <div class="col-12">
                         <label class="form-label fw-semibold">Descripción</label>
-                        <textarea name="description" class="form-control" rows="3">{{ old('description', $document->description) }}</textarea>
+                        <textarea name="description" class="form-control with-counter" rows="3" maxlength="300" data-max="300">{{ old('description', $document->description) }}</textarea>
+                        <div class="form-text text-end"><small class="counter">0/300</small></div>
                         @error('description')
                         <div class="text-danger small">{{ $message }}</div>
                         @enderror
@@ -114,5 +117,17 @@ function togglePriceField() {
     const priceField = document.getElementById('priceField');
     priceField.style.display = (isFree == "0") ? 'block' : 'none';
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const counters = document.querySelectorAll('.with-counter');
+    counters.forEach(el => {
+        const max = parseInt(el.dataset.max || el.getAttribute('maxlength'), 10);
+        const counter = el.parentElement.querySelector('.counter');
+        const update = () => { if (counter) counter.textContent = `${el.value.length}/${max}`; };
+        el.addEventListener('input', update);
+        update();
+    });
+    togglePriceField();
+});
 </script>
 @endsection

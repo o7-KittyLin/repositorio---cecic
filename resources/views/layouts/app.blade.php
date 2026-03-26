@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <link rel="shortcut icon" href="{{ asset('img/logos/Logo.png') }}" type="image/x-icon">
 
     <style>
         body {
@@ -22,7 +23,7 @@
         #sidebar {
             background-color: #2e2e2e;
             min-height: 100vh;
-            width: 250px;
+            width: 260px;
             position: fixed;
             left: 0;
             top: 0;
@@ -57,7 +58,14 @@
             padding: 12px 20px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             transition: 0.2s;
+        }
+
+        #sidebar .nav-link .label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         #sidebar .nav-link i {
@@ -69,6 +77,45 @@
         #sidebar .nav-link.active {
             background-color: #3b2720;
             color: #fff;
+        }
+
+        .sidebar-group {
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-group .group-toggle {
+            color: #ddd;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .sidebar-group .group-toggle:hover {
+            background-color: #3b2720;
+        }
+
+        .sidebar-group .group-toggle .label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-group ul {
+            list-style: none;
+            margin: 0;
+            padding: 0 0 8px 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease;
+        }
+
+        .sidebar-group ul.collapsed {
+            max-height: 0;
+            padding-bottom: 0;
         }
 
         /* Main Content */
@@ -101,6 +148,32 @@
             text-align: center;
             padding: 15px 0;
         }
+
+        /* Paginación */
+        .pagination {
+            justify-content: flex-end;
+            gap: 6px;
+        }
+        .pagination .page-link {
+            color: #4e342e;
+            border-radius: 8px;
+            padding: 6px 12px;
+            border: 1px solid #dcdcdc;
+        }
+        .pagination .page-link:hover {
+            color: #fff;
+            background-color: #4e342e;
+            border-color: #4e342e;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #4e342e;
+            border-color: #4e342e;
+        }
+        .pagination .page-item.disabled .page-link {
+            color: #aaa;
+            background-color: #f8f8f8;
+            border-color: #e5e5e5;
+        }
     </style>
 
     @stack('styles')
@@ -115,63 +188,142 @@
         @auth
             <li>
                 <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-speedometer2"></i> Dashboard
+                    <span class="label"><i class="bi bi-speedometer2"></i> Dashboard</span>
                 </a>
             </li>
+            @hasrole('Usuario')
+            <li>
+                <a href="{{ route('users.edit', Auth::id()) }}" class="nav-link">
+                    <span class="label"><i class="bi bi-person-circle"></i> Perfil</span>
+                </a>
+            </li>
+            @endhasrole
         @else
             <li>
                 <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
-                    <i class="bi bi-house"></i> Inicio
+                    <span class="label"><i class="bi bi-house"></i> Inicio</span>
                 </a>
             </li>
         @endauth
 
-        {{-- Enlaces comunes --}}
-        <li>
-            <a href="{{ route('multimedia.index') }}" class="nav-link {{ request()->routeIs('multimedia.index') ? 'active' : '' }}">
-                <i class="bi bi-camera-video"></i> Multimedia
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('repository.gallery') }}" class="nav-link {{ request()->routeIs('repository.gallery') ? 'active' : '' }}">
-                <i class="bi bi-collection"></i> Observatorio
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('repository.index') }}" class="nav-link {{ request()->routeIs('repository.index') ? 'active' : '' }}">
-                <i class="bi bi-archive"></i> Repositorio
-            </a>
-        </li>
+        {{-- Bloque Contenido --}}
+        @hasanyrole('Administrador|Empleado')
+            <li class="sidebar-group">
+                <button class="group-toggle" data-group="contenido">
+                    <span class="label"><i class="bi bi-folder"></i> Contenido</span>
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul class="group-list" data-group-list="contenido">
+                    <li>
+                        <a href="{{ route('multimedia.index') }}" class="nav-link {{ request()->routeIs('multimedia.index') ? 'active' : '' }}">
+                            <span class="label"><i class="bi bi-camera-video"></i> Multimedia</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('repository.gallery') }}" class="nav-link {{ request()->routeIs('repository.gallery') ? 'active' : '' }}">
+                            <span class="label"><i class="bi bi-collection"></i> Observatorio</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @else
+            {{-- Para Usuario: enlaces simples sin scroll/animacion --}}
+            <li>
+                <a href="{{ route('multimedia.index') }}" class="nav-link {{ request()->routeIs('multimedia.index') ? 'active' : '' }}">
+                    <span class="label"><i class="bi bi-camera-video"></i> Multimedia</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('repository.gallery') }}" class="nav-link {{ request()->routeIs('repository.gallery') ? 'active' : '' }}">
+                    <span class="label"><i class="bi bi-collection"></i> Observatorio</span>
+                </a>
+            </li>
+        @endhasanyrole
 
-        {{-- Admin --}}
-        @hasrole('Administrador')
-            <li>
-                <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                    <i class="bi bi-people"></i> Usuarios
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('sales.index') }}" class="nav-link {{ request()->routeIs('sales.*') || request()->routeIs('sales.byDocument') ? 'active' : '' }}">
-                    <i class="bi bi-cash-coin"></i> Ventas
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('announcements.index') }}" class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="bi bi-megaphone"></i> Anuncios
-                </a>
-            </li>
+        {{-- Bloque Gestion --}}
+        @hasanyrole('Administrador|Empleado')
+        <li class="sidebar-group">
+            <button class="group-toggle" data-group="gestion">
+                <span class="label"><i class="bi bi-people"></i> Gestion</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <ul class="group-list" data-group-list="gestion">
+                <li>
+                    <a href="{{ route('repository.index') }}" class="nav-link {{ request()->routeIs('repository.index') ? 'active' : '' }}">
+                        <span class="label"><i class="bi bi-archive"></i> Repositorio</span>
+                    </a>
+                </li>
+                @hasrole('Administrador')
+                <li>
+                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <span class="label"><i class="bi bi-people"></i> Usuarios</span>
+                    </a>
+                </li>
+                @endhasrole
+            </ul>
+        </li>
         @endhasrole
+
+        {{-- Bloque Ventas --}}
+        @hasanyrole('Administrador|Empleado')
+        <li class="sidebar-group">
+            <button class="group-toggle" data-group="ventas">
+                <span class="label"><i class="bi bi-cash-coin"></i> Ventas</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <ul class="group-list" data-group-list="ventas">
+                <li>
+                    <a href="{{ route('sales.index') }}" class="nav-link {{ request()->routeIs('sales.*') || request()->routeIs('sales.byDocument') ? 'active' : '' }}">
+                        <span class="label"><i class="bi bi-graph-up"></i> Ventas</span>
+                    </a>
+                </li>
+                @php $pendingPurchases = \App\Models\PurchaseRequest::where('status','pending')->count(); @endphp
+                <li>
+                    <a href="{{ route('purchase-requests.index') }}" class="nav-link {{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
+                        <span class="label"><i class="bi bi-bag-check"></i> Solicitudes de compra</span>
+                        @if($pendingPurchases>0)
+                            <span class="badge bg-warning text-dark ms-2">{{ $pendingPurchases }}</span>
+                        @endif
+                    </a>
+                </li>
+                @hasrole('Administrador')
+                <li>
+                    <a href="{{ route('payment-settings.edit') }}" class="nav-link {{ request()->routeIs('payment-settings.*') ? 'active' : '' }}">
+                        <span class="label"><i class="bi bi-qr-code"></i> Config. pagos</span>
+                    </a>
+                </li>
+                @endhasrole
+            </ul>
+        </li>
+        @endhasanyrole
+
+        {{-- Bloque Comunicacion --}}
+        @hasanyrole('Administrador|Empleado')
+        <li class="sidebar-group">
+            <button class="group-toggle" data-group="comunicacion">
+                <span class="label"><i class="bi bi-megaphone"></i> Comunicacion</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <ul class="group-list" data-group-list="comunicacion">
+                <li>
+                    <a href="{{ route('announcements.index') }}" class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+                        <span class="label"><i class="bi bi-megaphone"></i> Anuncios</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        @endhasanyrole
 
         {{-- Usuario --}}
         @hasrole('Usuario')
             <li>
                 <a href="{{ route('purchases.my') }}" class="nav-link {{ request()->routeIs('purchases.my') ? 'active' : '' }}">
-                    <i class="bi bi-bag-check"></i> Mis Compras
+                    <span class="label"><i class="bi bi-bag-check"></i> Mis Compras</span>
                 </a>
             </li>
             <li>
                 <a href="{{ route('favorites.my') }}" class="nav-link {{ request()->routeIs('favorites.my') ? 'active' : '' }}">
-                    <i class="bi bi-heart"></i> Favoritos
+                    <span class="label"><i class="bi bi-heart"></i> Favoritos</span>
                 </a>
             </li>
         @endhasrole
@@ -215,11 +367,52 @@
     </main>
 
     <footer>
-        © {{ date('Y') }} CECIC — Repositorio de Información de Cacao
+        © {{ date('Y') }} CECIC — Repositorio de Información del Cacao
     </footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggles = document.querySelectorAll('.group-toggle');
+    toggles.forEach(btn => {
+        const group = btn.getAttribute('data-group');
+        const list = document.querySelector(`[data-group-list="${group}"]`);
+        if (!list) return;
+
+        const saved = localStorage.getItem('group-' + group);
+        if (saved === 'collapsed') {
+            list.classList.add('collapsed');
+            list.style.maxHeight = '0px';
+            btn.querySelector('.bi')?.classList.replace('bi-chevron-down','bi-chevron-right');
+        } else {
+            list.style.maxHeight = list.scrollHeight + 'px';
+        }
+
+        btn.addEventListener('click', function() {
+            const icon = btn.querySelector('.bi');
+            const isCollapsed = list.classList.contains('collapsed');
+
+            if (isCollapsed) {
+                list.classList.remove('collapsed');
+                const targetHeight = list.scrollHeight;
+                list.style.maxHeight = targetHeight + 'px';
+                icon?.classList.replace('bi-chevron-right','bi-chevron-down');
+                localStorage.setItem('group-' + group, 'open');
+            } else {
+                const currentHeight = list.scrollHeight;
+                list.style.maxHeight = currentHeight + 'px';
+                requestAnimationFrame(() => {
+                    list.classList.add('collapsed');
+                    list.style.maxHeight = '0px';
+                });
+                icon?.classList.replace('bi-chevron-down','bi-chevron-right');
+                localStorage.setItem('group-' + group, 'collapsed');
+            }
+        });
+    });
+});
+</script>
 @stack('scripts')
 </body>
 </html>

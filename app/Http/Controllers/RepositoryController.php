@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\Category;
+use App\Models\PaymentSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ class RepositoryController extends Controller
     {
         $categories = Category::all();
 
-        $query = Document::with('category')->where('is_active', true);
+        $query = Document::with(['category', 'user'])->where('is_active', true);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -33,15 +34,16 @@ class RepositoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:300',
             'file'        => 'required|file|mimes:pdf,doc,docx,ppt,pptx|max:10240',
             'category_id' => 'nullable|exists:categories,id',
-            'price'       => 'nullable|numeric|min:0',
+            'price'       => 'nullable|numeric|min:0|max:99999999.99',
         ], [
             'title.required'       => 'El título es obligatorio.',
             'title.string'         => 'El título debe ser un texto válido.',
             'title.max'            => 'El título no puede superar los 255 caracteres.',
             'description.string'   => 'La descripción debe ser un texto válido.',
+            'description.max'      => 'La descripción no puede superar los 300 caracteres.',
             'file.required'        => 'Debes subir un archivo.',
             'file.file'            => 'El archivo no es válido.',
             'file.mimes'           => 'El archivo debe ser PDF, DOC, DOCX, PPT o PPTX.',
@@ -49,6 +51,7 @@ class RepositoryController extends Controller
             'category_id.exists'   => 'La categoría seleccionada no es válida.',
             'price.numeric'        => 'El precio debe ser un número.',
             'price.min'            => 'El precio no puede ser negativo.',
+            'price.max'            => 'El precio es demasiado alto (máximo 99,999,999.99).',
         ]);
 
         if ($validator->fails()) {
@@ -92,7 +95,7 @@ class RepositoryController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->route('repository.index')
-                ->with('error', $e->getMessage())
+                ->with('error', 'No se pudo guardar el documento. Verifica el precio y el archivo e inténtalo nuevamente.')
                 ->withInput();
         }
     }
@@ -111,17 +114,19 @@ class RepositoryController extends Controller
     {
         $request->validate([
             'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:300',
             'category_id' => 'nullable|exists:categories,id',
-            'price'       => 'nullable|numeric|min:0',
+            'price'       => 'nullable|numeric|min:0|max:99999999.99',
         ], [
             'title.required'       => 'El título es obligatorio.',
             'title.string'         => 'El título debe ser un texto válido.',
             'title.max'            => 'El título no puede superar los 255 caracteres.',
             'description.string'   => 'La descripción debe ser un texto válido.',
+            'description.max'      => 'La descripción no puede superar los 300 caracteres.',
             'category_id.exists'   => 'La categoría seleccionada no es válida.',
             'price.numeric'        => 'El precio debe ser un número.',
             'price.min'            => 'El precio no puede ser negativo.',
+            'price.max'            => 'El precio es demasiado alto (máximo 99,999,999.99).',
         ]);
 
         $document->update([
@@ -149,7 +154,7 @@ class RepositoryController extends Controller
 
     public function gallery(Request $request)
     {
-        $query = Document::with('category');
+        $query = Document::with(['category', 'user']);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -157,8 +162,9 @@ class RepositoryController extends Controller
 
         $documents = $query->latest()->paginate(12);
         $categories = Category::all();
+        $paymentSetting = PaymentSetting::latest()->first();
 
-        return view('repository.gallery', compact('documents', 'categories'));
+        return view('repository.gallery', compact('documents', 'categories','paymentSetting'));
     }
 
 

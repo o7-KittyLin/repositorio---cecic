@@ -12,33 +12,32 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('announcements.store') }}" method="POST">
+                    <form action="{{ route('announcements.store') }}" method="POST" novalidate>
                         @csrf
 
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Título del Anuncio*</label>
-                                <input type="text" name="title" class="form-control"
-                                       value="{{ old('title') }}">
+                                <label class="form-label fw-semibold">Titulo del Anuncio*</label>
+                                <input type="text" name="title" class="form-control" value="{{ old('title') }}">
                                 @error('title')
                                     <div class="text-danger small">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Descripción</label>
-                                <textarea name="description" class="form-control" rows="3">{{ old('description') }}</textarea>
+                                <label class="form-label fw-semibold">Descripcion</label>
+                                <textarea name="description" class="form-control with-counter" rows="3" maxlength="300" data-max="300">{{ old('description') }}</textarea>
+                                <div class="form-text text-end"><small class="counter">0/300</small></div>
                                 @error('description')
                                     <div class="text-danger small">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="row g-3">
-
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Tipo*</label>
                                     <select name="type" class="form-select">
-                                        <option value="reunion" {{ old('type')=='reunion' ? 'selected' : '' }}>Reunión</option>
+                                        <option value="reunion" {{ old('type')=='reunion' ? 'selected' : '' }}>Reunion</option>
                                         <option value="multimedia" {{ old('type')=='multimedia' ? 'selected' : '' }}>Multimedia</option>
                                     </select>
                                     @error('type')
@@ -46,16 +45,14 @@
                                     @enderror
                                 </div>
 
-                                <!-- Fecha de inicio -->
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold">Fecha de Inicio*</label>
                                     <input type="text" id="start_date" name="start_date" class="form-control" placeholder="Selecciona fecha" value="{{ old('start_date') }}">
                                     @error('start_date')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                        <div class="text-danger small">{{ $message }}</div>
                                     @enderror
                                 </div>
 
-                                <!-- Hora de inicio -->
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold">Hora de Inicio*</label>
                                     <div class="d-flex">
@@ -67,15 +64,14 @@
                                     </div>
                                     <div id="start_time_error" class="text-danger small"></div>
                                     @error('start_hour')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                        <div class="text-danger small">{{ $message }}</div>
                                     @enderror
                                     @error('start_period')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                        <div class="text-danger small">{{ $message }}</div>
                                     @enderror
                                     <small class="text-muted">Seleccione hora entre 8-12 AM o 1-5 PM</small>
                                 </div>
 
-                                <!-- Hora de fin -->
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold">Hora de Fin*</label>
                                     <div class="d-flex">
@@ -87,20 +83,20 @@
                                     </div>
                                     <div id="end_time_error" class="text-danger small"></div>
                                     @error('end_hour')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                        <div class="text-danger small">{{ $message }}</div>
                                     @enderror
                                     @error('end_period')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                        <div class="text-danger small">{{ $message }}</div>
                                     @enderror
                                     <small class="text-muted">Posterior a la hora de inicio</small>
                                 </div>
                             </div>
+
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Link del contenido*</label>
-                                <input type="url" name="link" class="form-control"
-                                       value="{{ old('link') }}" placeholder="https://youtube.com/... o https://meet.google.com/...">
+                                <input type="url" name="link" class="form-control @error('link') is-invalid @enderror" value="{{ old('link') }}" placeholder="https://youtube.com/... o https://meet.google.com/...">
                                 @error('link')
-                                    <div class="text-danger small">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -126,155 +122,144 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    const startDate = document.getElementById('start_date');
+    const startHourInput = document.getElementById('start_hour');
+    const startPeriodSelect = document.getElementById('start_period');
+    const endHourInput = document.getElementById('end_hour');
+    const endPeriodSelect = document.getElementById('end_period');
+    const startError = document.getElementById('start_time_error');
+    const endError = document.getElementById('end_time_error');
+    const typeSelect = document.querySelector('select[name="type"]');
+    let holidays = [];
 
-        // Inputs
-        const startDate = document.getElementById('start_date');
-        const startHourInput = document.getElementById('start_hour');
-        const startPeriodSelect = document.getElementById('start_period');
-        const endHourInput = document.getElementById('end_hour');
-        const endPeriodSelect = document.getElementById('end_period');
+    const currentYear = new Date().getFullYear();
+    Promise.all([
+        fetch(`https://date.nager.at/api/v3/PublicHolidays/${currentYear}/CO`).then(r => r.json()),
+        fetch(`https://date.nager.at/api/v3/PublicHolidays/${currentYear + 1}/CO`).then(r => r.json())
+    ]).then(([curr, next]) => {
+        holidays = [...curr, ...next].map(h => h.date);
+    }).catch(err => console.warn('No se pudieron cargar los feriados:', err));
 
-        // Divs de error para JS
-        const startError = document.getElementById('start_time_error');
-        const endError = document.getElementById('end_time_error');
-
-        const typeSelect = document.querySelector('select[name="type"]');
-        let holidays = [];
-
-        // Traer feriados de Colombia
-        const currentYear = new Date().getFullYear();
-        Promise.all([
-            fetch(`https://date.nager.at/api/v3/PublicHolidays/${currentYear}/CO`).then(r => r.json()),
-            fetch(`https://date.nager.at/api/v3/PublicHolidays/${currentYear+1}/CO`).then(r => r.json())
-        ]).then(([curr, next]) => {
-            holidays = [...curr, ...next].map(h => h.date);
-        }).catch(err => console.warn('No se pudieron cargar los feriados:', err));
-
-        // Flatpickr para la fecha
-        flatpickr(startDate, {
-            dateFormat: "Y-m-d",
-            minDate: "today",
-            locale: "es",
-            disable: [
-                function(date) {
-                    const day = date.getDay();
-                    const dateStr = date.toISOString().split('T')[0];
-                    return day === 0 || day === 6 || holidays.includes(dateStr);
-                }
-            ]
-        });
-
-        // Convierte hora + periodo a 24h
-        function to24Hour(hourStr, period) {
-            const parts = hourStr.split(':');
-            if(parts.length !== 2) return null;
-            let h = parseInt(parts[0]);
-            const m = parseInt(parts[1]);
-            if(period.toUpperCase() === 'PM' && h !== 12) h += 12;
-            if(period.toUpperCase() === 'AM' && h === 12) h = 0;
-            return { hour: h, minute: m };
-        }
-
-        // Validar formato HH:MM
-        function isValidFormat(hourStr) {
-            return /^\\d{1,2}:\\d{2}$/.test(hourStr);
-        }
-
-        // Validar franjas horarias
-        function isValidRange(t) {
-            return (t.hour >= 8 && t.hour <= 12) || (t.hour >= 13 && t.hour <= 17);
-        }
-
-        // Validar hora de inicio
-        function validateStart() {
-            if(!startError) return true;
-            startError.textContent = '';
-
-            const val = startHourInput.value;
-            if(!isValidFormat(val)) {
-                startError.textContent = 'Formato inválido HH:MM';
-                return false;
+    flatpickr(startDate, {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        locale: "es",
+        disable: [
+            function(date) {
+                const day = date.getDay();
+                const dateStr = date.toISOString().split('T')[0];
+                return day === 0 || day === 6 || holidays.includes(dateStr);
             }
-
-            const t = to24Hour(val, startPeriodSelect.value);
-            if(!isValidRange(t)) {
-                startError.textContent = 'Hora de inicio fuera de rango (8-12 AM / 1-5 PM)';
-                return false;
-            }
-
-            return true;
-        }
-
-        // Validar hora de fin
-        function validateEnd() {
-            if(!endError) return true;
-            endError.textContent = '';
-
-            const startValid = validateStart();
-            if(!startValid) return false;
-
-            const val = endHourInput.value;
-            if(!isValidFormat(val)) {
-                endError.textContent = 'Formato inválido HH:MM';
-                return false;
-            }
-
-            const startTime = to24Hour(startHourInput.value, startPeriodSelect.value);
-            const endTime = to24Hour(endHourInput.value, endPeriodSelect.value);
-
-            if(!isValidRange(endTime)) {
-                endError.textContent = 'Hora de fin fuera de rango (8-12 AM / 1-5 PM)';
-                return false;
-            }
-
-            const startMinutes = startTime.hour * 60 + startTime.minute;
-            const endMinutes = endTime.hour * 60 + endTime.minute;
-
-            if(endMinutes <= startMinutes) {
-                endError.textContent = 'La hora de fin debe ser posterior a la hora de inicio';
-                return false;
-            }
-
-            return true;
-        }
-
-        // Listeners
-        startHourInput.addEventListener('input', validateStart);
-        startPeriodSelect.addEventListener('change', validateStart);
-        endHourInput.addEventListener('input', validateEnd);
-        endPeriodSelect.addEventListener('change', validateEnd);
-
-        function toggleScheduleFields() {
-            const isReunion = typeSelect && typeSelect.value === 'reunion';
-            [startDate, startHourInput, startPeriodSelect, endHourInput, endPeriodSelect].forEach(el => {
-                if (!el) return;
-                el.disabled = !isReunion;
-                el.closest('.col-md-4')?.classList.toggle('opacity-50', !isReunion);
-            });
-        }
-
-        if (typeSelect) {
-            typeSelect.addEventListener('change', toggleScheduleFields);
-            toggleScheduleFields();
-        }
-
+        ]
     });
+
+    function to24Hour(hourStr, period) {
+        const parts = hourStr.split(':');
+        if (parts.length !== 2) return null;
+        let h = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10);
+        if (period.toUpperCase() === 'PM' && h !== 12) h += 12;
+        if (period.toUpperCase() === 'AM' && h === 12) h = 0;
+        return { hour: h, minute: m };
+    }
+
+    function isValidFormat(hourStr) {
+        return /^\d{1,2}:\d{2}$/.test((hourStr || '').trim());
+    }
+
+    function isValidRange(t) {
+        return t && ((t.hour >= 8 && t.hour <= 12) || (t.hour >= 13 && t.hour <= 17));
+    }
+
+    function validateStart() {
+        if (!startError) return true;
+        startError.textContent = '';
+
+        const val = (startHourInput.value || '').trim();
+    if (!isValidFormat(val)) {
+        startError.textContent = 'Formato invalido HH:MM';
+        return false;
+    }
+
+        const t = to24Hour(val, startPeriodSelect.value);
+        if (!isValidRange(t)) {
+            startError.textContent = 'Hora de inicio fuera de rango (8-12 AM / 1-5 PM)';
+            return false;
+        }
+        return true;
+    }
+
+    function validateEnd() {
+        if (!endError) return true;
+        endError.textContent = '';
+
+        const startValid = validateStart();
+        if (!startValid) return false;
+
+        const val = (endHourInput.value || '').trim();
+        if (!isValidFormat(val)) {
+            endError.textContent = 'Formato invalido HH:MM';
+            return false;
+        }
+
+        const startTime = to24Hour(startHourInput.value, startPeriodSelect.value);
+        const endTime = to24Hour(endHourInput.value, endPeriodSelect.value);
+
+        if (!isValidRange(endTime)) {
+            endError.textContent = 'Hora de fin fuera de rango (8-12 AM / 1-5 PM)';
+            return false;
+        }
+
+        const startMinutes = startTime.hour * 60 + startTime.minute;
+        const endMinutes = endTime.hour * 60 + endTime.minute;
+
+        if (endMinutes <= startMinutes) {
+            endError.textContent = 'La hora de fin debe ser posterior a la hora de inicio';
+            return false;
+        }
+
+        return true;
+    }
+
+    // Contador de texto
+    document.querySelectorAll('.with-counter').forEach(el => {
+        const max = parseInt(el.dataset.max || el.getAttribute('maxlength'), 10);
+        const counter = el.parentElement.querySelector('.counter');
+        const update = () => { if (counter) counter.textContent = `${el.value.length}/${max}`; };
+        el.addEventListener('input', update);
+        update();
+    });
+
+    startHourInput.addEventListener('input', validateStart);
+    startPeriodSelect.addEventListener('change', validateStart);
+    endHourInput.addEventListener('input', validateEnd);
+    endPeriodSelect.addEventListener('change', validateEnd);
+
+    function toggleScheduleFields() {
+        const isReunion = typeSelect && typeSelect.value === 'reunion';
+        [startDate, startHourInput, startPeriodSelect, endHourInput, endPeriodSelect].forEach(el => {
+            if (!el) return;
+            el.disabled = !isReunion;
+            el.closest('.col-md-4')?.classList.toggle('opacity-50', !isReunion);
+        });
+    }
+
+    if (typeSelect) {
+        typeSelect.addEventListener('change', toggleScheduleFields);
+        toggleScheduleFields();
+    }
+});
 </script>
 
-
 <style>
-    /* Mejoras visuales para Flatpickr */
     .flatpickr-calendar {
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     }
-
     .flatpickr-time input:hover,
     .flatpickr-time input:focus {
         background: #f8f9fa;
     }
-
-    /* Estilos para inputs deshabilitados */
     input:disabled {
         background-color: #e9ecef;
         cursor: not-allowed;

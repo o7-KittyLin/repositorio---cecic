@@ -41,7 +41,7 @@ return [
     'doesnt_contain'         => 'El campo :attribute no debe contener ninguno de los siguientes valores: :values.',
     'doesnt_end_with'        => 'El campo :attribute no debe finalizar con uno de los siguientes: :values.',
     'doesnt_start_with'      => 'El campo :attribute no debe comenzar con uno de los siguientes: :values.',
-    'email'                  => 'El campo :attribute no es un correo válido.',
+    'email'                  => 'El campo :attribute debe ser un correo electrónico válido.',
     'ends_with'              => 'El campo :attribute debe finalizar con uno de los siguientes valores: :values',
     'enum'                   => 'El campo :attribute no está en la lista de valores permitidos.',
     'exists'                 => 'El campo :attribute no existe.',

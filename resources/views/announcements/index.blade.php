@@ -27,6 +27,9 @@
                             <th>Inicio</th>
                             <th>Fin</th>
                             <th>Estado</th>
+                            @hasanyrole('Administrador|Empleado')
+                                <th>Creado por</th>
+                            @endhasanyrole
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -52,6 +55,9 @@
                                         <span class="badge bg-success">En curso</span>
                                     @endif
                                 </td>
+                                @hasanyrole('Administrador|Empleado')
+                                    <td>{{ $announcement->creator->name ?? 'N/D' }}</td>
+                                @endhasanyrole
                                 <td>
                                     <a href="{{ route('announcements.edit', $announcement->id) }}" 
                                        class="btn btn-sm btn-outline-warning">

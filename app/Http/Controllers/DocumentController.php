@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\PaymentSetting;
+use App\Models\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -119,9 +121,17 @@ class DocumentController extends Controller
     {
         $document->increment('views_count');
 
-        $document->load(['user', 'category', 'comments.user', 'likes']);
+        $document->load(['user', 'category', 'likes']);
 
         $isPurchased = auth()->check() ? $document->isPurchasedBy(auth()->user()) : false;
+        $pendingRequest = null;
+        if (auth()->check()) {
+            $pendingRequest = PurchaseRequest::where('user_id', auth()->id())
+                ->where('document_id', $document->id)
+                ->where('status', 'pending')
+                ->first();
+        }
+        $paymentSetting = PaymentSetting::latest()->first();
 
         $canViewFull =
             $document->is_free ||
@@ -133,11 +143,22 @@ class DocumentController extends Controller
             ->limit(4)
             ->get();
 
+        $comments = $document->comments()
+            ->whereNull('parent_id')
+            ->with(['user', 'children.user'])
+            ->latest()
+            ->paginate(10);
+        $commentsCount = $document->comments()->count();
+
         return view('documents.show', compact(
             'document',
             'isPurchased',
             'canViewFull',
-            'relatedDocuments'
+            'relatedDocuments',
+            'pendingRequest',
+            'paymentSetting',
+            'comments',
+            'commentsCount'
         ));
     }
 

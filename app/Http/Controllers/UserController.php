@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\AccountDeletion;
 use App\Services\DoubleHash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,24 +18,40 @@ class UserController extends Controller
         }
     }
 
+    private function ensureBaseRoles(): void
+    {
+        foreach (['Administrador', 'Empleado'] as $roleName) {
+            Role::findOrCreate($roleName, 'web');
+        }
+    }
+
     public function index()
     {
         $this->ensureAdmin();
+        $this->ensureBaseRoles();
 
-        $users = User::with('roles')->paginate(10);
+        $users = User::with('roles')
+            ->whereHas('roles', fn($q) => $q->whereIn('name', ['Empleado', 'Administrador']))
+            ->paginate(10);
         return view('users.index', compact('users'));
     }
 
     public function create()
     {
         $this->ensureAdmin();
-        $roles = Role::whereIn('name', ['Administrador', 'Empleado'])->get();
+        $this->ensureBaseRoles();
+        $roles = Role::whereIn('name', ['Administrador', 'Empleado'])
+            ->where('guard_name', 'web')
+            ->get()
+            ->unique('name')
+            ->values();
         return view('users.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
         $this->ensureAdmin();
+        $this->ensureBaseRoles();
 
         $request->validate([
             'name'     => 'required|string|max:255',
@@ -67,8 +84,15 @@ class UserController extends Controller
             abort(403);
         }
 
-        $roles = Role::whereIn('name', ['Administrador', 'Empleado'])->get();
-        return view('users.edit', compact('user', 'roles', 'isAdmin'));
+        $this->ensureBaseRoles();
+
+        $roles = Role::whereIn('name', ['Administrador', 'Empleado'])
+            ->where('guard_name', 'web')
+            ->get()
+            ->unique('name')
+            ->values();
+        $pendingDeletion = AccountDeletion::pendingFor($user);
+        return view('users.edit', compact('user', 'roles', 'isAdmin', 'pendingDeletion'));
     }
 
     public function update(Request $request, User $user)

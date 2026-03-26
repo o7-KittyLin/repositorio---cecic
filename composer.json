@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-sodium": "*",
         "barryvdh/laravel-dompdf": "^3.1",
         "defuse/php-encryption": "^2.4",
         "laravel-lang/common": "*",
@@ -15,8 +16,7 @@
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6.4",
-        "spatie/laravel-permission": "^6.23",
-        "ext-sodium": "*"
+        "spatie/laravel-permission": "^6.24"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -1,5 +1,6 @@
 {{-- resources/views/documents/show.blade.php --}}
 @extends('layouts.app')
+@php use Illuminate\Support\Str; @endphp
 
 @section('content')
     <div class="container-fluid">
@@ -25,15 +26,17 @@
                         <div class="d-flex gap-2">
                             @auth
                                 @if (!$document->is_free && !$isPurchased)
-                                    <form action="{{ route('documents.purchase', $document->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-warning btn-sm">
+                                    @if($pendingRequest && $pendingRequest->status === 'pending')
+                                        <span class="badge bg-warning text-dark align-self-center">Solicitud pendiente</span>
+                                    @elseif($pendingRequest && $pendingRequest->status === 'rejected')
+                                        <span class="badge bg-danger align-self-center">Solicitud rechazada</span>
+                                    @else
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#purchaseModal">
                                             <i class="bi bi-cart-plus"></i> Comprar - ${{ number_format($document->price, 2) }}
                                         </button>
-                                    </form>
+                                    @endif
                                 @endif
                             @endauth
-                            @endif
 
                             @if ($canViewFull)
                                 <a href="{{ route('documents.download', $document->id) }}" class="btn btn-success btn-sm">
@@ -146,7 +149,7 @@
                     <div class="card-header bg-light">
                         <h5 class="mb-0">
                             <i class="bi bi-chat-left-text"></i> Comentarios
-                            <span class="badge bg-brown ms-2">{{ $document->comments->count() }}</span>
+                            <span class="badge bg-brown ms-2">{{ $commentsCount }}</span>
                         </h5>
                     </div>
 
@@ -156,7 +159,8 @@
                             <form action="{{ route('documents.comment', $document->id) }}" method="POST" class="mb-4">
                                 @csrf
                                 <div class="mb-3">
-                                    <textarea name="comment" class="form-control" rows="3" placeholder="Escribe tu comentario..." required></textarea>
+                                    <textarea name="comment" class="form-control with-counter" rows="3" placeholder="Escribe tu comentario..." required maxlength="500" data-max="500"></textarea>
+                                    <div class="form-text text-end"><small class="counter">0/500</small></div>
                                 </div>
                                 <div class="text-end">
                                     <button type="submit" class="btn btn-brown btn-sm">
@@ -172,29 +176,123 @@
 
                         <!-- Lista de comentarios -->
                         <div class="comments-section">
-                            @forelse($document->comments as $comment)
+                            @forelse($comments as $comment)
                                 <div class="comment-item border-bottom pb-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
                                             <div class="d-flex align-items-center mb-1">
                                                 <strong class="me-2">{{ $comment->user->name }}</strong>
-                                                <small
-                                                    class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                                <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                                             </div>
-                                            <p class="mb-0 text-dark">{{ $comment->comment }}</p>
+                                            @php
+                                                $isLongComment = Str::length($comment->comment) > 200;
+                                                $shortComment = Str::limit($comment->comment, 200);
+                                            @endphp
+                                            <p id="comment-body-{{ $comment->id }}" class="mb-1 text-dark comment-body" data-full="{{ $comment->comment }}" data-short="{{ $shortComment }}">
+                                                {{ $isLongComment ? $shortComment : $comment->comment }}
+                                            </p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                @if($isLongComment)
+                                                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill toggle-comment" data-target="comment-body-{{ $comment->id }}">Ver más</button>
+                                                @endif
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill reply-toggle" data-comment-id="{{ $comment->id }}">Responder</button>
+                                            </div>
                                         </div>
 
                                         @if ($comment->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
-                                            <form action="{{ route('comments.destroy', $comment->id) }}" method="POST"
-                                                class="ms-2">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('¿Eliminar este comentario?')">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
+                                        <form id="deleteCommentForm-{{ $comment->id }}"
+                                            action="{{ route('comments.destroy', $comment->id) }}"
+                                            method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmDeleteCommentModal"
+                                                data-comment-id="{{ $comment->id }}"
+                                                data-comment-author="{{ $comment->user->name }}"
+                                                data-is-owner="{{ $comment->user_id === auth()->id() ? '1' : '0' }}"
+                                            >
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+
+                                        </form>
                                         @endif
                                     </div>
+
+                                    {{-- Responder --}}
+                                    <div class="reply-form mt-2" id="reply-form-{{ $comment->id }}" style="display:none;">
+                                        <form action="{{ route('documents.comment', $document->id) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                            <div class="mb-2">
+                                                <textarea name="comment" class="form-control with-counter" rows="2" maxlength="500" data-max="500" placeholder="Escribe tu respuesta..."></textarea>
+                                                <div class="form-text text-end"><small class="counter">0/500</small></div>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-sm btn-brown">Responder</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary cancel-reply" data-comment-id="{{ $comment->id }}">Cancelar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    {{-- Hijos con paginación 5 --}}
+                                    @php
+                                        $replies = $comment->children()->paginate(5, ['*'], 'reply_page_'.$comment->id);
+                                    @endphp
+                                    @if($replies->total() > 0)
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill toggle-replies mt-2" data-target="replies-{{ $comment->id }}">
+                                            Ver respuestas ({{ $replies->total() }})
+                                        </button>
+                                        <div class="mt-3 ps-3 border-start replies" id="replies-{{ $comment->id }}" style="display:none;">
+                                            @foreach($replies as $child)
+                                                @php
+                                                    $isLongChild = Str::length($child->comment) > 200;
+                                                    $shortChild = Str::limit($child->comment, 200);
+                                                @endphp
+                                                <div class="mb-3">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <strong class="me-2">{{ $child->user->name }}</strong>
+                                                        <small class="text-muted">{{ $child->created_at->diffForHumans() }}</small>
+                                                    </div>
+                                                    <p id="comment-body-{{ $child->id }}" class="mb-1 text-dark comment-body" data-full="{{ $child->comment }}" data-short="{{ $shortChild }}">
+                                                        {{ $isLongChild ? $shortChild : $child->comment }}
+                                                    </p>
+                                                    @if($isLongChild)
+                                                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill toggle-comment" data-target="comment-body-{{ $child->id }}">Ver más</button>
+                                                    @endif
+                                                    @if ($child->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('Administrador')))
+
+                                                    <form id="deleteCommentForm-{{ $child->id }}"
+                                                        action="{{ route('comments.destroy', $child->id) }}"
+                                                        method="POST"
+                                                        class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#confirmDeleteCommentModal"
+                                                            data-comment-id="{{ $child->id }}"
+                                                            data-comment-author="{{ $child->user->name }}"
+                                                            data-is-owner="{{ $child->user_id === auth()->id() ? '1' : '0' }}"
+                                                        >
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+
+                                                    @endif
+
+                                                </div>
+                                            @endforeach
+                                            <div class="d-flex justify-content-end">
+                                                {{ $replies->withQueryString()->links() }}
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             @empty
                                 <div class="text-center text-muted py-4">
@@ -202,6 +300,9 @@
                                     <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
                                 </div>
                             @endforelse
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            {{ $comments->links() }}
                         </div>
                     </div>
                 </div>
@@ -241,6 +342,14 @@
                                 <span class="badge bg-secondary">No adquirido</span>
                             @endif
                         </div>
+
+                        @if(!$document->is_free && !$isPurchased)
+                            @if($pendingRequest && $pendingRequest->status === 'pending')
+                                <div class="alert alert-warning py-2">Solicitud de compra pendiente de revision.</div>
+                            @elseif($pendingRequest && $pendingRequest->status === 'rejected')
+                                <div class="alert alert-danger py-2">Solicitud rechazada.</div>
+                            @endif
+                        @endif
 
                         <div class="mb-3">
                             <strong>Subido:</strong>
@@ -293,18 +402,210 @@
         </div>
     </div>
 
+<!-- Modal eliminar comentario -->
+    <div class="modal fade" id="confirmDeleteCommentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Eliminar comentario
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-    <script>
-        // Incrementar contador de vistas cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch(`/documents/{{ $document->id }}/view`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                }
-            });
+            <div class="modal-body">
+                <span id="deleteCommentMessage">
+                    ¿Seguro que deseas eliminar este comentario?
+                </span>
+                <br>
+                <small class="text-muted">Esta acción no se puede deshacer.</small>
+            </div>
 
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button class="btn btn-danger" id="confirmDeleteCommentBtn">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal compra simulada -->
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title"><i class="bi bi-cart-plus"></i> Comprar documento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        @if($paymentSetting)
+            <p class="mb-2"><strong>Numero de cuenta:</strong> {{ $paymentSetting->account_number }}</p>
+            @if($paymentSetting->key)
+                <p class="mb-2"><strong>Llave:</strong> {{ $paymentSetting->key }}</p>
+            @endif
+            @if($paymentSetting->qr_path)
+                <div class="mb-3">
+                    <img src="{{ asset('storage/'.$paymentSetting->qr_path) }}" class="img-fluid rounded border" alt="QR">
+                </div>
+            @endif
+        @else
+            <div class="alert alert-info">Aun no hay configuracion de pago. Contacta al administrador.</div>
+        @endif
+        <p class="small text-muted mb-1">Selecciona “Ya realice el pago” para enviar la solicitud al administrador.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        @if($paymentSetting)
+        <form action="{{ route('documents.purchase-request', $document->id) }}" method="POST" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-warning text-dark" data-submit="purchase-request">
+                Ya realice el pago
+            </button>
+        </form>
+        @endif
+      </div>
+    </div>
+  </div>
+</div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* ===============================
+       📈 Contador de vistas
+    =============================== */
+    fetch(`/documents/{{ $document->id }}/view`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    });
+
+
+    /* ===============================
+       🛒 Modal de compra – autofocus
+    =============================== */
+    const purchaseModal = document.getElementById('purchaseModal');
+    if (purchaseModal) {
+        purchaseModal.addEventListener('shown.bs.modal', function () {
+            const btn = purchaseModal.querySelector('button[data-submit="purchase-request"]');
+            if (btn) btn.focus();
         });
-    </script>
+    }
+
+
+    /* ===============================
+       🔢 Contadores de caracteres
+    =============================== */
+    document.querySelectorAll('.with-counter').forEach(el => {
+        const max = parseInt(el.dataset.max || el.getAttribute('maxlength'), 10);
+        const counter = el.parentElement.querySelector('.counter');
+
+        const update = () => {
+            if (counter && max) {
+                counter.textContent = `${el.value.length}/${max}`;
+            }
+        };
+
+        el.addEventListener('input', update);
+        update();
+    });
+
+
+    /* ===============================
+       💬 Ver más / ver menos comentario
+    =============================== */
+    document.querySelectorAll('.toggle-comment').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = document.getElementById(btn.dataset.target);
+            if (!p) return;
+
+            const full = p.dataset.full;
+            const short = p.dataset.short;
+            const isOpen = btn.dataset.state === 'open';
+
+            p.textContent = isOpen ? short : full;
+            btn.textContent = isOpen ? 'Ver más' : 'Ver menos';
+            btn.dataset.state = isOpen ? 'closed' : 'open';
+        });
+    });
+
+
+    /* ===============================
+       ↩️ Mostrar / ocultar responder
+    =============================== */
+    document.querySelectorAll('.reply-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const form = document.getElementById(`reply-form-${btn.dataset.commentId}`);
+            if (form) form.style.display = 'block';
+        });
+    });
+
+    document.querySelectorAll('.cancel-reply').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const form = document.getElementById(`reply-form-${btn.dataset.commentId}`);
+            if (form) form.style.display = 'none';
+        });
+    });
+
+
+    /* ===============================
+       🧵 Mostrar / ocultar respuestas
+    =============================== */
+    document.querySelectorAll('.toggle-replies').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const container = document.getElementById(btn.dataset.target);
+            if (!container) return;
+
+            const isHidden = container.style.display === 'none' || container.style.display === '';
+            container.style.display = isHidden ? 'block' : 'none';
+            btn.textContent = isHidden ? 'Ocultar respuestas' : 'Ver respuestas';
+        });
+    });
+
+
+    /* ===============================
+    🗑️ Modal eliminar comentario
+    =============================== */
+    const deleteCommentModal = document.getElementById('confirmDeleteCommentModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteCommentBtn');
+    const deleteMessage = document.getElementById('deleteCommentMessage');
+
+    let currentCommentId = null;
+
+    if (deleteCommentModal) {
+        deleteCommentModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+
+            currentCommentId = button.dataset.commentId;
+            const author = button.dataset.commentAuthor;
+            const isOwner = button.dataset.isOwner === '1';
+
+            if (isOwner) {
+                deleteMessage.textContent = '¿Seguro que deseas eliminar tu comentario?';
+            } else {
+                deleteMessage.textContent = `¿Seguro que deseas eliminar el comentario de ${author}?`;
+            }
+        });
+    }
+
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function () {
+            if (!currentCommentId) return;
+
+            const form = document.getElementById('deleteCommentForm-' + currentCommentId);
+            if (form) form.submit();
+        });
+    }
+
+
+});
+</script>
+@endpush
 @endsection
