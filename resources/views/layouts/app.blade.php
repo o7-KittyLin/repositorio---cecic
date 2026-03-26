@@ -367,7 +367,7 @@
     </main>
 
     <footer>
-        © {{ date('Y') }} CECIC — Repositorio de Información de Cacao
+        © {{ date('Y') }} CECIC — Repositorio de Información del Cacao
     </footer>
 </div>
 

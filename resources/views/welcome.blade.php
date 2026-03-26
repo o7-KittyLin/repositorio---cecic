@@ -58,9 +58,9 @@
         <div class="hero-inner">
             <div class="hero-text">
                 <span class="hero-tag">Centro Especializado de Investigación del Cacao</span>
-                <h1>Repositorio CECIC</h1>
+                <h1>Centro Colombiano de Investigación del Cacao</h1>
                 <p>
-                    Un espacio digital para consultar, organizar y compartir información científica, técnica y académica sobre el cacao, pensado para investigadores, estudiantes, productores y tomadores de decisiones.
+                   Innovación y conocimiento que transforma el cacao
                 </p>
                 <div class="hero-badges">
                     <div class="hero-badge"><i class="bi bi-mortarboard-fill me-1"></i> Investigación y academia</div>
@@ -426,6 +426,24 @@
             <div class="footer-left">
                 <p><i class="bi bi-envelope-fill"></i> cecic@garmi.com</p>
                 <p><i class="bi bi-telephone-fill"></i> +57 578 864 377</p>
+            </div>
+            <div class="footer-divider-vertical"></div>
+            <div class="footer-left">
+                <a href="https://www.youtube.com/@CECIC_COL">
+                    <img src="{{ asset('img/logos/youtube.png') }}" alt="Logo Youtube">
+                </a>
+                <a href="https://www.instagram.com/cecic_col/">
+                    <img src="{{ asset('img/logos/instagram.png') }}" alt="Logo Instagram">
+                </a>
+            </div>
+            <div class="footer-divider-vertical"></div>
+            <div class="footer-right">
+                <a href="https://www.linkedin.com/in/centro-colombiano-de-investigaci%C3%B3n-del-cacao-2792493b2/">
+                    <img src="{{ asset('img/logos/linkedin.png') }}" alt="Logo LinkedIn">
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61588432487340">
+                    <img src="{{ asset('img/logos/facebook.png') }}" alt="Logo Facebook">
+                </a>
             </div>
             <div class="footer-divider-vertical"></div>
             <div class="footer-right">

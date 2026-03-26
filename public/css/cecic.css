@@ -1010,6 +1010,13 @@ footer.pie.cacao-footer {
   margin-right: 6px;
 }
 
+.footer-left a img,
+.footer-right a img {
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
 /* LÍNEA VERTICAL */
 .footer-divider-vertical {
   width: 2px;
