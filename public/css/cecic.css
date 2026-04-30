@@ -675,9 +675,6 @@ body {
   box-shadow: 0 15px 25px rgba(0,0,0,0.15);
 }
 
-/* bubble-card: se usa en valores; sin reglas de momento (placeholder decorativo) */
-.bubble-card {}
-
 .valor-contenido h4 {
   font-size: 1.1rem;
   margin-bottom: 6px;

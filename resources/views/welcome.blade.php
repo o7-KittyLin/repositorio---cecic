@@ -28,7 +28,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="#que-es">¿Quiénes somos?</a></li>
                         <li><a href="#mision-vision">Misión y Visión</a></li>
-                        <li><a href="#lugares">Dónde estamos</a></li>
+                        <!--<li><a href="#lugares">Dónde estamos</a></li> -->
                         <li><a href="#valores">Valores</a></li>
                     </ul>
                 </li>
@@ -57,10 +57,10 @@
     <section class="hero-landing" id="inicio">
         <div class="hero-inner">
             <div class="hero-text">
-                <span class="hero-tag">Centro Especializado de Investigación del Cacao</span>
+                <!-- <span class="hero-tag">Centro Especializado de Investigación del Cacao</span> -->
                 <h1>Centro Colombiano de Investigación del Cacao</h1>
                 <p>
-                   Innovación y conocimiento que transforma el cacao
+                   Innovación y conocimiento que transforman el cacao
                 </p>
                 <div class="hero-badges">
                     <div class="hero-badge"><i class="bi bi-mortarboard-fill me-1"></i> Investigación y academia</div>
@@ -86,17 +86,17 @@
                 </div>
             </div>
             <div class="hero-image-wrapper">
-                <img src="{{ asset('img/banner-cacao.png') }}" alt="Imagen Cacao" class="hero-image">
+                <img src="{{ asset('img/baner.jpg') }}" alt="Imagen Cacao" class="hero-image">
             </div>
         </div>
     </section>
 
     {{-- ¿Qué es el CECIC? --}}
     <section class="nosotros" id="que-es">
-        <h2 class="titulo">¿Qienes somos?</h2>
+        <h2 class="titulo">¿Quiénes somos?</h2>
         <div class="info-img-sobre-nosotros">
             <div class="info-texto-sobre-nosotros">
-                <img class="img-nosotros" src="{{ asset('img/logos/logo3.png') }}" alt="Sobre Nosotros">
+                <img class="img-nosotros" src="{{ asset('img/logos/logo.png') }}" alt="Sobre Nosotros">
                 <div class="info-nosotros">
                     Somos un centro de investigación dedicado a la generación y transferencia de conocimiento para fortalecer la cadena productiva del cacao.
                     <br><br>
@@ -106,7 +106,82 @@
         </div>
     </section>
 
-    {{-- Lugar --}}
+    {{-- Áreas --}}
+    <section class="areas" id="areas">
+        <h2 class="titulo">Áreas de Investigación</h2>
+        <div class="areas-grid">
+
+            <div class="area-item">
+                <div class="area-inner">
+                    <div class="area-front">
+                        <img src="{{ asset('img/gato.gif') }}" alt="Área 1">
+                        <h4>Área 1</h4>
+                    </div>
+                    <div class="area-back">
+                        <h4>Área 1</h4>
+                        <p>Descripción breve del área 1...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-item">
+                <div class="area-inner">
+                    <div class="area-front">
+                        <img src="{{ asset('img/cacao-gif.gif') }}" alt="Área 2">
+                        <h4>Área 2</h4>
+                    </div>
+                    <div class="area-back">
+                        <h4>Área 2</h4>
+                        <p>Descripción breve del área 2...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-item">
+                <div class="area-inner">
+                    <div class="area-front">
+                        <img src="{{ asset('img/gato.gif') }}" alt="Área 3">
+                        <h4>Área 3</h4>
+                    </div>
+                    <div class="area-back">
+                        <h4>Área 3</h4>
+                        <p>Descripción breve del área 3...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-item">
+                <div class="area-inner">
+                    <div class="area-front">
+                        <img src="{{ asset('img/no-disponible.gif') }}" alt="Área 4">
+                        <h4>Área 4</h4>
+                    </div>
+                    <div class="area-back">
+                        <h4>Área 4</h4>
+                        <p>Descripción breve del área 4...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-item">
+                <div class="area-inner">
+                    <div class="area-front">
+                        <img src="{{ asset('img/gato.gif') }}" alt="Área 5">
+                        <h4>Área 5</h4>
+                    </div>
+                    <div class="area-back">
+                        <h4>Área 5</h4>
+                        <p>Descripción breve del área 5...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    {{-- Lugares --}}
+    <!--
     <section class="mapa-colombia" id="lugares">
         <h2 class="titulo">Dónde estamos</h2>
         <div class="mapa-container">
@@ -274,7 +349,7 @@
             </div>
 
         </div>
-    </section>
+    </section> -->
 
 
     {{-- Misión y Visión --}}
@@ -304,7 +379,7 @@
 
     {{-- Valores --}}
     <section class="valores" id="valores">
-        <h2 class="titulo">Valores</h2>
+        <h2 class="titulo">Valores Corporativos</h2>
         <div class="valores-grid">
             <div class="valor-item bubble-card">
                 <div class="cacao-float"></div><div class="cacao-float"></div><div class="cacao-float"></div>
@@ -324,9 +399,9 @@
             </div>
             <div class="valor-item bubble-card">
                 <div class="cacao-float"></div><div class="cacao-float"></div><div class="cacao-float"></div>
-                <img src="{{ asset('img/trabajo.jpg') }}" alt="Corporatividad">
+                <img src="{{ asset('img/trabajo.jpg') }}" alt="Trabajo Colaborativo">
                 <div class="valor-contenido">
-                    <h4>Corporatividad</h4>
+                    <h4>Trabajo Colaborativo</h4>
                     <p>Unimos esfuerzos con productores, instituciones y aliados para un desarrollo sostenible y compartido.</p>
                 </div>
             </div>
@@ -338,27 +413,14 @@
                     <p>Promovemos prácticas responsables que protejan el medio ambiente y aseguren un futuro mejor.</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    {{-- Áreas --}}
-    <section class="areas" id="areas">
-        <h2 class="titulo">Información de las Áreas</h2>
-        <div class="areas-grid">
-            @for($i=1; $i<=5; $i++)
-                <div class="area-item">
-                    <div class="area-inner">
-                        <div class="area-front">
-                            <img src="{{ asset($i === 2 ? 'img/cacao-gif.gif' : ($i === 4 ? 'img/no-disponible.gif' : 'img/gato.gif')) }}" alt="Área {{ $i }}">
-                            <h4>Área {{ $i }}</h4>
-                        </div>
-                        <div class="area-back">
-                            <h4>Área {{ $i }}</h4>
-                            <p>Descripción breve del área {{ $i }}...</p>
-                        </div>
-                    </div>
+            <div class="valor-item bubble-card">
+                <div class="cacao-float"></div><div class="cacao-float"></div><div class="cacao-float"></div>
+                <img src="{{ asset('img/sostenible.png') }}" alt="Ética e Integridad">
+                <div class="valor-contenido">
+                    <h4>Ética e Integridad</h4>
+                    <p>Promovemos prácticas responsables que protejan el medio ambiente y aseguren un futuro mejor.</p>
                 </div>
-            @endfor
+            </div>
         </div>
     </section>
 
@@ -390,24 +452,24 @@
             </button>
             <div class="imagenes-aliados">
                 <div class="slide-aliado">
-                    <img src="{{ asset('img/tolima.png') }}" alt="Aliado 1">
-                    <p class="descripcion-aliado">Universidad del Tolima</p>
+                    <img src="{{ asset('img/logos/fet.png') }}" alt="Aliado 1">
+                    <p class="descripcion-aliado">Fundación Escuela Tecnológica de Neiva</p>
                 </div>
                 <div class="slide-aliado">
-                    <img src="{{ asset('img/nariño.jpg') }}" alt="Aliado 2">
+                    <img src="{{ asset('img/logos/narino.png') }}" alt="Aliado 2">
                     <p class="descripcion-aliado">Universidad de Nariño</p>
                 </div>
                 <div class="slide-aliado">
-                    <img src="{{ asset('img/red.jpg') }}" alt="Aliado 3">
-                    <p class="descripcion-aliado">Red cacotera de Colombia</p>
+                    <img src="{{ asset('img/logos/santander.png') }}" alt="Aliado 3">
+                    <p class="descripcion-aliado">Universidad Industrial de Santander</p>
                 </div>
                 <div class="slide-aliado">
-                    <img src="{{ asset('img/mesa.jpg') }}" alt="Aliado 4">
-                    <p class="descripcion-aliado">Mesa nacional de cacao</p>
+                    <img src="{{ asset('img/logos/nacional.png') }}" alt="Aliado 4">
+                    <p class="descripcion-aliado">Universidad Nacional de Colombia</p>
                 </div>
                 <div class="slide-aliado">
-                    <img src="{{ asset('img/fet.jpg') }}" alt="Aliado 5">
-                    <p class="descripcion-aliado">Fundación Escuela Tecnológica de Neiva</p>
+                    <img src="{{ asset('img/logos/pereira.png') }}" alt="Aliado 5">
+                    <p class="descripcion-aliado">Universidad Tecnológica de Pereira</p>
                 </div>
             </div>
             <button class="next-aliado" aria-label="Siguiente aliado">
@@ -419,9 +481,9 @@
 
 <footer class="pie cacao-footer" id="contacto">
     <div class="footer-container">
-        <div class="footer-top">
+        <!--<div class="footer-top">
             <span class="footer-chip">Observatorio del Cacao · CECIC</span>
-        </div>
+        </div> -->
         <div class="footer-bottom">
             <div class="footer-left">
                 <p><i class="bi bi-envelope-fill"></i> cecic@garmi.com</p>
@@ -432,13 +494,13 @@
                 <a href="https://www.youtube.com/@CECIC_COL">
                     <img src="{{ asset('img/logos/youtube.png') }}" alt="Logo Youtube">
                 </a>
-                <a href="https://www.instagram.com/cecic_col/">
+                <a href="https://www.instagram.com/cecic_colombia/">
                     <img src="{{ asset('img/logos/instagram.png') }}" alt="Logo Instagram">
                 </a>
             </div>
             <div class="footer-divider-vertical"></div>
             <div class="footer-right">
-                <a href="https://www.linkedin.com/in/centro-colombiano-de-investigaci%C3%B3n-del-cacao-2792493b2/">
+                <a href="https://www.linkedin.com/company/centro-colombiano-de-investigaci%C3%B3n-del-cacao">
                     <img src="{{ asset('img/logos/linkedin.png') }}" alt="Logo LinkedIn">
                 </a>
                 <a href="https://www.facebook.com/profile.php?id=61588432487340">
@@ -448,7 +510,7 @@
             <div class="footer-divider-vertical"></div>
             <div class="footer-right">
                 <p>© {{ date('Y') }} CECIC</p>
-                <p>Repositorio del Cacao</p>
+                <a href="{{ route('repository.gallery') }}">Observatorio del Cacao</a>
             </div>
         </div>
     </div>

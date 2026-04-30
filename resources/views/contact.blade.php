@@ -226,30 +226,40 @@
             </div>
         </div>
 
-        {{-- FOOTER --}}
         <footer class="pie cacao-footer" id="contacto">
             <div class="footer-container">
-
-                <div class="footer-top">
-                    <span class="footer-chip">🍫 Observatorio del Cacao · CECIC</span>
-                </div>
-
+                <!--<div class="footer-top">
+                    <span class="footer-chip">Observatorio del Cacao · CECIC</span>
+                </div> -->
                 <div class="footer-bottom">
-
                     <div class="footer-left">
                         <p><i class="bi bi-envelope-fill"></i> cecic@garmi.com</p>
                         <p><i class="bi bi-telephone-fill"></i> +57 578 864 377</p>
                     </div>
-
                     <div class="footer-divider-vertical"></div>
-
+                    <div class="footer-left">
+                        <a href="https://www.youtube.com/@CECIC_COL">
+                            <img src="{{ asset('img/logos/youtube.png') }}" alt="Logo Youtube">
+                        </a>
+                        <a href="https://www.instagram.com/cecic_colombia/">
+                            <img src="{{ asset('img/logos/instagram.png') }}" alt="Logo Instagram">
+                        </a>
+                    </div>
+                    <div class="footer-divider-vertical"></div>
+                    <div class="footer-right">
+                        <a href="https://www.linkedin.com/company/centro-colombiano-de-investigaci%C3%B3n-del-cacao">
+                            <img src="{{ asset('img/logos/linkedin.png') }}" alt="Logo LinkedIn">
+                        </a>
+                        <a href="https://www.facebook.com/profile.php?id=61588432487340">
+                            <img src="{{ asset('img/logos/facebook.png') }}" alt="Logo Facebook">
+                        </a>
+                    </div>
+                    <div class="footer-divider-vertical"></div>
                     <div class="footer-right">
                         <p>© {{ date('Y') }} CECIC</p>
-                        <p>Repositorio del Cacao</p>
+                        <a href="{{ route('repository.gallery') }}">Observatorio del Cacao</a>
                     </div>
-
                 </div>
-
             </div>
         </footer>
 
