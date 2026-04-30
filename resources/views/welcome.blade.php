@@ -93,14 +93,14 @@
 
     {{-- ¿Qué es el CECIC? --}}
     <section class="nosotros" id="que-es">
-        <h2 class="titulo">¿Qué es el CECIC?</h2>
+        <h2 class="titulo">¿Qienes somos?</h2>
         <div class="info-img-sobre-nosotros">
             <div class="info-texto-sobre-nosotros">
                 <img class="img-nosotros" src="{{ asset('img/logos/logo3.png') }}" alt="Sobre Nosotros">
                 <div class="info-nosotros">
-                    El <strong>Centro Especializado de Investigación del Cacao (CECIC)</strong> es una plataforma dedicada a recopilar, organizar y facilitar el acceso a información científica, técnica y académica relacionada con el cacao.
+                    Somos un centro de investigación dedicado a la generación y transferencia de conocimiento para fortalecer la cadena productiva del cacao.
                     <br><br>
-                    Buscamos fortalecer la investigación, apoyar la toma de decisiones informadas y generar oportunidades para toda la cadena de valor del cacao, desde el productor hasta el consumidor.
+                    Nuestro propósito es impulsar la innovación, la sostenibilidad y la competitividad del sector cacaotero por medio de investigación científica, desarrollo tecnológico y formación especializada. A través de alianzas estratégicas con instituciones académicas, organizaciones del sector y actores de la industria, promovemos soluciones basadas en evidencia que contribuyen al desarrollo rural, a la valorización del cacao de origen y al apoyo a productores, empresas y comunidades rurales.
                 </div>
             </div>
         </div>
